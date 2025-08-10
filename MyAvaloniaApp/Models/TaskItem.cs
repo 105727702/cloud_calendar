@@ -45,7 +45,17 @@ namespace MyAvaloniaApp.Models
         public TaskItemStatus Status
         {
             get => _status;
-            set => this.RaiseAndSetIfChanged(ref _status, value);
+            set 
+            { 
+                var oldValue = _status;
+                this.RaiseAndSetIfChanged(ref _status, value);
+                if (oldValue != value)
+                {
+                    this.RaisePropertyChanged(nameof(StatusText));
+                    this.RaisePropertyChanged(nameof(IsOverdue));
+                    this.RaisePropertyChanged(nameof(IsNearDeadline));
+                }
+            }
         }
 
         public string StatusText => Status switch

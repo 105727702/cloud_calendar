@@ -27,6 +27,7 @@ namespace MyAvaloniaApp.ViewModels
         private TimeSpan? _deadlineTime = new TimeSpan(9, 0, 0); // Default to 9:00 AM
         private int _selectedStatus = 0;
         private string _statusFilter = "Tất cả";
+        private DateTime _currentWeekStart = DateTime.Now.AddDays(-(int)DateTime.Now.DayOfWeek);
 
         public ObservableCollection<TaskItem> Tasks { get; } = new();
         public ObservableCollection<TaskItem> FilteredTasks { get; } = new();
@@ -44,6 +45,9 @@ namespace MyAvaloniaApp.ViewModels
         public ICommand CheckDeadlinesCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand OpenUserManagementCommand { get; }
+        public ICommand PreviousWeekCommand { get; }
+        public ICommand NextWeekCommand { get; }
+        public ICommand ResetTaskIdCommand { get; }
 
         public string CurrentUserName => _authService.CurrentUser?.Username ?? "Guest";
         public bool IsAuthenticated => _authService.IsAuthenticated;
@@ -73,12 +77,34 @@ namespace MyAvaloniaApp.ViewModels
             CheckDeadlinesCommand = new MainRelayCommand(async () => await CheckDeadlinesAsync());
             LogoutCommand = new MainRelayCommand(Logout);
             OpenUserManagementCommand = new MainRelayCommand(OpenUserManagement);
+            PreviousWeekCommand = new MainRelayCommand(PreviousWeek);
+            NextWeekCommand = new MainRelayCommand(NextWeek);
+            ResetTaskIdCommand = new MainRelayCommand(async () => await ResetTaskIdAsync());
 
             // Timer để kiểm tra deadline định kỳ (mỗi 15 phút)
             _deadlineCheckTimer = new Timer(15 * 60 * 1000); // 15 minutes
             _deadlineCheckTimer.Elapsed += async (_, _) => await CheckDeadlinesAsync();
             _deadlineCheckTimer.AutoReset = true;
             _deadlineCheckTimer.Start();
+
+            // Subscribe to Tasks collection changes to monitor status updates
+            Tasks.CollectionChanged += (sender, e) =>
+            {
+                if (e.NewItems != null)
+                {
+                    foreach (TaskItem item in e.NewItems)
+                    {
+                        item.PropertyChanged += OnTaskPropertyChanged;
+                    }
+                }
+                if (e.OldItems != null)
+                {
+                    foreach (TaskItem item in e.OldItems)
+                    {
+                        item.PropertyChanged -= OnTaskPropertyChanged;
+                    }
+                }
+            };
 
             // Load initial data
             Task.Run(async () =>
@@ -226,6 +252,9 @@ namespace MyAvaloniaApp.ViewModels
             {
                 FilteredTasks.Add(task);
             }
+            
+            // Ensure UI knows about the change
+            OnPropertyChanged(nameof(FilteredTasks));
         }
 
         private void UpdateDeadlineFromComponents()
@@ -266,6 +295,9 @@ namespace MyAvaloniaApp.ViewModels
                 ClearForm();
 
                 _notificationService.ShowSuccess("Thành công", $"Đã thêm task '{newTask.Title}'");
+                
+                // Force refresh calendar display
+                OnPropertyChanged(nameof(FilteredTasks));
             }
             catch (Exception ex)
             {
@@ -291,10 +323,13 @@ namespace MyAvaloniaApp.ViewModels
 
                 await _databaseService.UpdateTaskAsync(SelectedTask);
                 
-                // Reload lại toàn bộ danh sách để đảm bảo dữ liệu đồng bộ
-                await LoadTasksAsync();
+                // Refresh filtered tasks instead of reloading everything
+                FilterTasks();
 
                 _notificationService.ShowSuccess("Thành công", $"Đã cập nhật task '{taskTitle}'");
+                
+                // Force refresh calendar display
+                OnPropertyChanged(nameof(FilteredTasks));
             }
             catch (Exception ex)
             {
@@ -315,6 +350,9 @@ namespace MyAvaloniaApp.ViewModels
                 ClearForm();
 
                 _notificationService.ShowSuccess("Thành công", $"Đã xóa task '{taskTitle}'");
+                
+                // Force refresh calendar display
+                OnPropertyChanged(nameof(FilteredTasks));
             }
             catch (Exception ex)
             {
@@ -435,6 +473,119 @@ namespace MyAvaloniaApp.ViewModels
                 OnPropertyChanged(nameof(IsAuthenticated));
                 OnPropertyChanged(nameof(IsAdmin));
             });
+        }
+
+        #endregion
+
+        #region Calendar Properties and Methods
+
+        public DateTime GetCurrentWeekStart() => _currentWeekStart;
+
+        public string CurrentWeekDisplay
+        {
+            get
+            {
+                var endWeek = _currentWeekStart.AddDays(6);
+                return $"{_currentWeekStart:dd/MM/yyyy} - {endWeek:dd/MM/yyyy}";
+            }
+        }
+
+        public string SundayDate => _currentWeekStart.Day.ToString();
+        public string MondayDate => _currentWeekStart.AddDays(1).Day.ToString();
+        public string TuesdayDate => _currentWeekStart.AddDays(2).Day.ToString();
+        public string WednesdayDate => _currentWeekStart.AddDays(3).Day.ToString();
+        public string ThursdayDate => _currentWeekStart.AddDays(4).Day.ToString();
+        public string FridayDate => _currentWeekStart.AddDays(5).Day.ToString();
+        public string SaturdayDate => _currentWeekStart.AddDays(6).Day.ToString();
+
+        // Today highlighting properties
+        public bool IsSundayToday => DateTime.Today == _currentWeekStart.Date;
+        public bool IsMondayToday => DateTime.Today == _currentWeekStart.AddDays(1).Date;
+        public bool IsTuesdayToday => DateTime.Today == _currentWeekStart.AddDays(2).Date;
+        public bool IsWednesdayToday => DateTime.Today == _currentWeekStart.AddDays(3).Date;
+        public bool IsThursdayToday => DateTime.Today == _currentWeekStart.AddDays(4).Date;
+        public bool IsFridayToday => DateTime.Today == _currentWeekStart.AddDays(5).Date;
+        public bool IsSaturdayToday => DateTime.Today == _currentWeekStart.AddDays(6).Date;
+
+        private void PreviousWeek()
+        {
+            _currentWeekStart = _currentWeekStart.AddDays(-7);
+            RefreshCalendarProperties();
+        }
+
+        private void NextWeek()
+        {
+            _currentWeekStart = _currentWeekStart.AddDays(7);
+            RefreshCalendarProperties();
+        }
+
+        private void RefreshCalendarProperties()
+        {
+            OnPropertyChanged(nameof(CurrentWeekDisplay));
+            OnPropertyChanged(nameof(SundayDate));
+            OnPropertyChanged(nameof(MondayDate));
+            OnPropertyChanged(nameof(TuesdayDate));
+            OnPropertyChanged(nameof(WednesdayDate));
+            OnPropertyChanged(nameof(ThursdayDate));
+            OnPropertyChanged(nameof(FridayDate));
+            OnPropertyChanged(nameof(SaturdayDate));
+            OnPropertyChanged(nameof(IsSundayToday));
+            OnPropertyChanged(nameof(IsMondayToday));
+            OnPropertyChanged(nameof(IsTuesdayToday));
+            OnPropertyChanged(nameof(IsWednesdayToday));
+            OnPropertyChanged(nameof(IsThursdayToday));
+            OnPropertyChanged(nameof(IsFridayToday));
+            OnPropertyChanged(nameof(IsSaturdayToday));
+            OnPropertyChanged("CurrentWeekStart"); // For CalendarView
+        }
+
+        private async void OnTaskPropertyChanged(object? sender, PropertyChangedEventArgs e)
+        {
+            if (sender is TaskItem task && e.PropertyName == nameof(TaskItem.Status))
+            {
+                try
+                {
+                    // Update the task in database
+                    await _databaseService.UpdateTaskAsync(task);
+                    
+                    // Refresh the filtered tasks
+                    await Dispatcher.UIThread.InvokeAsync(() =>
+                    {
+                        FilterTasks();
+                    });
+                    
+                    _notificationService.ShowSuccess("Cập nhật", "Trạng thái task đã được cập nhật!");
+                }
+                catch (Exception ex)
+                {
+                    _notificationService.ShowError("Lỗi", $"Không thể cập nhật trạng thái: {ex.Message}");
+                }
+            }
+        }
+
+        #endregion
+
+        #region Reset ID Methods
+
+        // Method để reset task ID sequence về 1 mà KHÔNG mất dữ liệu
+        private async Task ResetTaskIdAsync()
+        {
+            try
+            {
+                // Hiển thị thông báo xác nhận
+                _notificationService.ShowInfo("Đang xử lý...", "Đang reset ID sequence. Vui lòng đợi...");
+                
+                await _databaseService.ResetTaskIdSequencePreserveDataAsync();
+                await LoadTasksAsync();
+                
+                _notificationService.ShowSuccess("Thành công!", 
+                    "ID sequence đã được reset về 1. Tất cả dữ liệu được giữ nguyên!");
+            }
+            catch (Exception ex)
+            {
+                _notificationService.ShowError("Lỗi!", 
+                    $"Không thể reset ID sequence: {ex.Message}");
+            }
         }
 
         #endregion

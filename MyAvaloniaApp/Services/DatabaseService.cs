@@ -477,5 +477,77 @@ namespace MyAvaloniaApp.Services
             var rowsAffected = await command.ExecuteNonQueryAsync();
             return rowsAffected > 0;
         }
+
+        // Method để reset task ID sequence về 1 mà KHÔNG mất dữ liệu
+        public async Task ResetTaskIdSequencePreserveDataAsync()
+        {
+            using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync();
+
+            using var transaction = connection.BeginTransaction();
+
+            try
+            {
+                // Bước 1: Tạo bảng tạm với cấu trúc giống Tasks
+                var createTempCommand = connection.CreateCommand();
+                createTempCommand.Transaction = transaction;
+                createTempCommand.CommandText = @"
+                    CREATE TABLE Tasks_Temp (
+                        Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        Title TEXT NOT NULL,
+                        Description TEXT,
+                        Deadline TEXT NOT NULL,
+                        Status INTEGER NOT NULL,
+                        UserId INTEGER,
+                        FOREIGN KEY (UserId) REFERENCES Users(Id)
+                    )";
+                await createTempCommand.ExecuteNonQueryAsync();
+
+                // Bước 2: Copy dữ liệu từ bảng cũ sang bảng mới (ID sẽ tự động được tạo lại từ 1)
+                var copyDataCommand = connection.CreateCommand();
+                copyDataCommand.Transaction = transaction;
+                copyDataCommand.CommandText = @"
+                    INSERT INTO Tasks_Temp (Title, Description, Deadline, Status, UserId)
+                    SELECT Title, Description, Deadline, Status, UserId 
+                    FROM Tasks 
+                    ORDER BY Id";
+                await copyDataCommand.ExecuteNonQueryAsync();
+
+                // Bước 3: Xóa bảng cũ
+                var dropOldCommand = connection.CreateCommand();
+                dropOldCommand.Transaction = transaction;
+                dropOldCommand.CommandText = "DROP TABLE Tasks";
+                await dropOldCommand.ExecuteNonQueryAsync();
+
+                // Bước 4: Đổi tên bảng mới thành Tasks
+                var renameCommand = connection.CreateCommand();
+                renameCommand.Transaction = transaction;
+                renameCommand.CommandText = "ALTER TABLE Tasks_Temp RENAME TO Tasks";
+                await renameCommand.ExecuteNonQueryAsync();
+
+                // Bước 5: Reset sqlite_sequence để đảm bảo ID tiếp theo bắt đầu đúng
+                var resetSequenceCommand = connection.CreateCommand();
+                resetSequenceCommand.Transaction = transaction;
+                resetSequenceCommand.CommandText = "DELETE FROM sqlite_sequence WHERE name='Tasks'";
+                await resetSequenceCommand.ExecuteNonQueryAsync();
+
+                // Bước 6: Cập nhật sqlite_sequence với số lượng record hiện tại
+                var updateSequenceCommand = connection.CreateCommand();
+                updateSequenceCommand.Transaction = transaction;
+                updateSequenceCommand.CommandText = @"
+                    INSERT INTO sqlite_sequence (name, seq) 
+                    SELECT 'Tasks', COUNT(*) FROM Tasks";
+                await updateSequenceCommand.ExecuteNonQueryAsync();
+
+                await transaction.CommitAsync();
+                Console.WriteLine("Task ID sequence has been reset to start from 1. All data preserved!");
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                Console.WriteLine($"Error resetting task ID sequence: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

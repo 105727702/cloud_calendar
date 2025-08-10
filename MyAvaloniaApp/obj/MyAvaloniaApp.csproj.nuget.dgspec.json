@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\huyho\\OneDrive\\Desktop\\c#\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {}
+    "C:\\Users\\huyho\\OneDrive\\Desktop\\calendar\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\huyho\\OneDrive\\Desktop\\c#\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {
+    "C:\\Users\\huyho\\OneDrive\\Desktop\\calendar\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\huyho\\OneDrive\\Desktop\\c#\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
+        "projectUniqueName": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendar\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
         "projectName": "MyAvaloniaApp",
-        "projectPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\c#\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
+        "projectPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendar\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
         "packagesPath": "C:\\Users\\huyho\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\c#\\MyAvaloniaApp\\obj\\",
+        "outputPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendar\\c-\\MyAvaloniaApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\huyho\\AppData\\Roaming\\NuGet\\NuGet.Config"

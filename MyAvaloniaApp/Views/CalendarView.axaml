@@ -1,0 +1,264 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MyAvaloniaApp.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+             x:Class="MyAvaloniaApp.Views.CalendarView"
+             x:DataType="vm:MainWindowViewModel">
+
+    <UserControl.Styles>
+        <Style Selector="Border.hour-line">
+            <Setter Property="Background" Value="#e9ecef"/>
+            <Setter Property="Height" Value="1"/>
+        </Style>
+        
+        <Style Selector="Border.day-border">
+            <Setter Property="BorderBrush" Value="#dee2e6"/>
+            <Setter Property="BorderThickness" Value="0,1,1,1"/>
+        </Style>
+        
+        <Style Selector="Border.task-block">
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Margin" Value="2,0,4,0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        
+        <Style Selector="Border.task-block:pointerover">
+            <Setter Property="Opacity" Value="0.8"/>
+        </Style>
+        
+        <Style Selector="Button.week-nav">
+            <Setter Property="Background" Value="#ffffff"/>
+            <Setter Property="BorderBrush" Value="#dee2e6"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Foreground" Value="#495057"/>
+        </Style>
+        
+        <Style Selector="Button.week-nav:pointerover">
+            <Setter Property="Background" Value="#f8f9fa"/>
+            <Setter Property="BorderBrush" Value="#adb5bd"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Week Navigation -->
+        <Border Grid.Row="0" Margin="10" Background="#ffffff" CornerRadius="8" Padding="10"
+                BorderBrush="#e9ecef" BorderThickness="1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="‹" 
+                        Command="{Binding PreviousWeekCommand}"
+                        Classes="week-nav"
+                        Width="40" Height="40"
+                        FontSize="20" FontWeight="Bold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+
+                <TextBlock Grid.Column="1" 
+                           Text="{Binding CurrentWeekDisplay}"
+                           FontSize="18" FontWeight="SemiBold"
+                           Foreground="#2c3e50"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
+                <Button Grid.Column="2" Content="›" 
+                        Command="{Binding NextWeekCommand}"
+                        Classes="week-nav"
+                        Width="40" Height="40"
+                        FontSize="20" FontWeight="Bold"
+                        HorizontalContentAlignment="Center"
+                        VerticalContentAlignment="Center"/>
+            </Grid>
+        </Border>
+
+        <!-- Week Header -->
+        <Border Grid.Row="1" Margin="10,0,10,10" Background="White" 
+                BorderBrush="#dee2e6" BorderThickness="1" CornerRadius="8,8,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- GMT+07 label -->
+                <Border Grid.Column="0" Classes="day-border" Padding="5" Background="#ecf0f1">
+                    <TextBlock Text="GMT+07" FontSize="10" 
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Foreground="#7f8c8d"/>
+                </Border>
+
+                <!-- Days of week -->
+                <Border Grid.Column="1" Classes="day-border" Padding="10,15" Background="#ecf0f1">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="SUN" FontSize="12" FontWeight="Medium" 
+                                   Foreground="#7f8c8d" HorizontalAlignment="Center"/>
+                        <Grid Width="32" Height="32" IsVisible="{Binding IsSundayToday}" Margin="0,5,0,0">
+                            <Ellipse Fill="#2c3e50"/>
+                            <TextBlock Text="{Binding SundayDate}" FontSize="16" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="{Binding SundayDate}" FontSize="20" FontWeight="Bold"
+                                   Foreground="#2c3e50" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                   IsVisible="{Binding !IsSundayToday}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Classes="day-border" Padding="10,15" Background="#ecf0f1">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="MON" FontSize="12" FontWeight="Medium" 
+                                   Foreground="#7f8c8d" HorizontalAlignment="Center"/>
+                        <Grid Width="32" Height="32" IsVisible="{Binding IsMondayToday}" Margin="0,5,0,0">
+                            <Ellipse Fill="#2c3e50"/>
+                            <TextBlock Text="{Binding MondayDate}" FontSize="16" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="{Binding MondayDate}" FontSize="20" FontWeight="Bold"
+                                   Foreground="#2c3e50" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                   IsVisible="{Binding !IsMondayToday}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="3" Classes="day-border" Padding="10,15" Background="#f8f9fa">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="TUE" FontSize="12" FontWeight="Medium" 
+                                   Foreground="#6c757d" HorizontalAlignment="Center"/>
+                        <Grid Width="32" Height="32" IsVisible="{Binding IsTuesdayToday}" Margin="0,5,0,0">
+                            <Ellipse Fill="#2c3e50"/>
+                            <TextBlock Text="{Binding TuesdayDate}" FontSize="16" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="{Binding TuesdayDate}" FontSize="20" FontWeight="Bold"
+                                   Foreground="#2c3e50" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                   IsVisible="{Binding !IsTuesdayToday}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="4" Classes="day-border" Padding="10,15" Background="#f8f9fa">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="WED" FontSize="12" FontWeight="Medium" 
+                                   Foreground="#6c757d" HorizontalAlignment="Center"/>
+                        <Grid Width="32" Height="32" IsVisible="{Binding IsWednesdayToday}" Margin="0,5,0,0">
+                            <Ellipse Fill="#2c3e50"/>
+                            <TextBlock Text="{Binding WednesdayDate}" FontSize="16" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="{Binding WednesdayDate}" FontSize="20" FontWeight="Bold"
+                                   Foreground="#2c3e50" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                   IsVisible="{Binding !IsWednesdayToday}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="5" Classes="day-border" Padding="10,15" Background="#f8f9fa">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="THU" FontSize="12" FontWeight="Medium" 
+                                   Foreground="#6c757d" HorizontalAlignment="Center"/>
+                        <Grid Width="32" Height="32" IsVisible="{Binding IsThursdayToday}" Margin="0,5,0,0">
+                            <Ellipse Fill="#2c3e50"/>
+                            <TextBlock Text="{Binding ThursdayDate}" FontSize="16" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="{Binding ThursdayDate}" FontSize="20" FontWeight="Bold"
+                                   Foreground="#2c3e50" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                   IsVisible="{Binding !IsThursdayToday}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="6" Classes="day-border" Padding="10,15" Background="#f8f9fa">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="FRI" FontSize="12" FontWeight="Medium" 
+                                   Foreground="#6c757d" HorizontalAlignment="Center"/>
+                        <Grid Width="32" Height="32" IsVisible="{Binding IsFridayToday}" Margin="0,5,0,0">
+                            <Ellipse Fill="#2c3e50"/>
+                            <TextBlock Text="{Binding FridayDate}" FontSize="16" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="{Binding FridayDate}" FontSize="20" FontWeight="Bold"
+                                   Foreground="#2c3e50" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                   IsVisible="{Binding !IsFridayToday}"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="7" Classes="day-border" Padding="10,15" Background="#f8f9fa">
+                    <StackPanel HorizontalAlignment="Center">
+                        <TextBlock Text="SAT" FontSize="12" FontWeight="Medium" 
+                                   Foreground="#6c757d" HorizontalAlignment="Center"/>
+                        <Grid Width="32" Height="32" IsVisible="{Binding IsSaturdayToday}" Margin="0,5,0,0">
+                            <Ellipse Fill="#2c3e50"/>
+                            <TextBlock Text="{Binding SaturdayDate}" FontSize="16" FontWeight="Bold"
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                        <TextBlock Text="{Binding SaturdayDate}" FontSize="20" FontWeight="Bold"
+                                   Foreground="#2c3e50" HorizontalAlignment="Center" Margin="0,5,0,0"
+                                   IsVisible="{Binding !IsSaturdayToday}"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Calendar Grid -->
+        <Border Grid.Row="2" Margin="10,0,10,10" Background="White"
+                BorderBrush="#dee2e6" BorderThickness="1" CornerRadius="0,0,8,8">
+            <ScrollViewer>
+                <Grid Name="CalendarGrid">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Time labels -->
+                    <StackPanel Grid.Column="0" Name="TimeLabels" Background="#f8f9fa">
+                        <!-- Time slots will be generated in code-behind -->
+                    </StackPanel>
+
+                    <!-- Calendar cells for each day -->
+                    <Grid Grid.Column="1" Name="SundayColumn" Background="#fafafa">
+                        <!-- Tasks will be positioned here -->
+                    </Grid>
+                    <Grid Grid.Column="2" Name="MondayColumn" Background="White">
+                        <!-- Tasks will be positioned here -->
+                    </Grid>
+                    <Grid Grid.Column="3" Name="TuesdayColumn" Background="#fafafa">
+                        <!-- Tasks will be positioned here -->
+                    </Grid>
+                    <Grid Grid.Column="4" Name="WednesdayColumn" Background="White">
+                        <!-- Tasks will be positioned here -->
+                    </Grid>
+                    <Grid Grid.Column="5" Name="ThursdayColumn" Background="#fafafa">
+                        <!-- Tasks will be positioned here -->
+                    </Grid>
+                    <Grid Grid.Column="6" Name="FridayColumn" Background="White">
+                        <!-- Tasks will be positioned here -->
+                    </Grid>
+                    <Grid Grid.Column="7" Name="SaturdayColumn" Background="#fafafa">
+                        <!-- Tasks will be positioned here -->
+                    </Grid>
+                </Grid>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

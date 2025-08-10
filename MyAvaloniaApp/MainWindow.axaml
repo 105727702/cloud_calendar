@@ -109,27 +109,47 @@
                         <Button Content="Xóa" Command="{Binding DeleteTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
                         <Button Content="Làm mới" Command="{Binding ClearFormCommand}" Margin="0,0,10,0" Padding="10,5"/>
                         <Button Content="Kiểm tra deadline" Command="{Binding CheckDeadlinesCommand}" Margin="0,0,10,0" Padding="10,5" Background="Orange"/>
+                        <Button Content="Reset ID (Giữ dữ liệu)" Command="{Binding ResetTaskIdCommand}" Margin="0,0,10,0" Padding="10,5" Background="Green" Foreground="White"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Danh sách công việc -->
+            <!-- Danh sách công việc - Calendar View -->
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <!-- Filter -->
-                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
-                    <TextBlock Text="Lọc theo trạng thái:" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <ComboBox ItemsSource="{Binding StatusFilterOptions}" 
+                <!-- Filter and View Toggle -->
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    
+                    <TextBlock Grid.Column="0" Text="Lọc theo trạng thái:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox Grid.Column="1" ItemsSource="{Binding StatusFilterOptions}" 
                               SelectedItem="{Binding StatusFilter}" 
                               Width="150"/>
-                </StackPanel>
+                    
+                    <!-- View Toggle Buttons -->
+                    <StackPanel Grid.Column="3" Orientation="Horizontal">
+                        <Button Content="📅 Lịch tuần" Name="CalendarViewButton" Padding="10,5" Margin="0,0,5,0" 
+                                Background="#007bff" Foreground="White"/>
+                        <Button Content="📋 Danh sách" Name="ListViewButton" Padding="10,5"
+                                Background="#6c757d" Foreground="White"/>
+                    </StackPanel>
+                </Grid>
 
-                <!-- Task List -->
-                <DataGrid Grid.Row="1" 
+                <!-- Calendar View -->
+                <views:CalendarView Grid.Row="1" Name="CalendarViewControl" 
+                                  DataContext="{Binding}" />
+
+                <!-- List View (Hidden by default) -->
+                <DataGrid Grid.Row="1" Name="TaskListView"
                           ItemsSource="{Binding FilteredTasks}"
                           SelectedItem="{Binding SelectedTask}"
                           AutoGenerateColumns="False"
@@ -137,15 +157,36 @@
                           CanUserResizeColumns="True"
                           GridLinesVisibility="All"
                           IsReadOnly="True"
-                          RowHeight="35"
-                          HeadersVisibility="Column">
+                          RowHeight="50"
+                          HeadersVisibility="Column"
+                          IsVisible="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" MinWidth="50"/>
-                        <DataGridTextColumn Header="Tên công việc" Binding="{Binding Title}" Width="250" MinWidth="200"/>
-                        <DataGridTextColumn Header="Mô tả" Binding="{Binding Description}" Width="300" MinWidth="200"/>
-                        <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80" MinWidth="60"/>
+                        <DataGridTemplateColumn Header="Tên công việc" Width="300" MinWidth="250">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="models:TaskItem">
+                                    <TextBlock Text="{Binding Title}" 
+                                               TextWrapping="Wrap" 
+                                               VerticalAlignment="Center"
+                                               Margin="5,2"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Mô tả" Width="350" MinWidth="300">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="models:TaskItem">
+                                    <TextBlock Text="{Binding Description}" 
+                                               TextWrapping="Wrap" 
+                                               VerticalAlignment="Center"
+                                               Margin="5,2"
+                                               MaxHeight="60"
+                                               TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline, StringFormat=dd/MM/yyyy HH:mm}" Width="180" MinWidth="160"/>
                         <DataGridTextColumn Header="Trạng thái" Binding="{Binding StatusText}" Width="120" MinWidth="100"/>
-                        <DataGridTemplateColumn Header="Cảnh báo" Width="100" MinWidth="80">
+                        <DataGridTemplateColumn Header="Cảnh báo" Width="130" MinWidth="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate DataType="models:TaskItem">
                                     <Border Background="{Binding ., Converter={StaticResource TaskWarningColorConverter}}"
