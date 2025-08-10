@@ -1,0 +1,147 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:MyAvaloniaApp.ViewModels"
+        xmlns:models="using:MyAvaloniaApp.Models"
+        xmlns:converters="using:MyAvaloniaApp.Converters"
+        xmlns:views="using:MyAvaloniaApp.Views"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+        x:Class="MyAvaloniaApp.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="Task Manager - Quản lý công việc"
+        MinWidth="1100" MinHeight="700"
+        Width="1200" Height="800">
+        
+    <Design.DataContext>
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+
+    <Window.Resources>
+        <converters:BooleanToColorConverter x:Key="BooleanToColorConverter"/>
+        <converters:BooleanToWarningTextConverter x:Key="BooleanToWarningTextConverter"/>
+        <converters:TaskWarningColorConverter x:Key="TaskWarningColorConverter"/>
+        <converters:TaskWarningTextConverter x:Key="TaskWarningTextConverter"/>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Main Content -->
+        <Grid Margin="10">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" MinHeight="200"/>
+                <RowDefinition Height="*" MinHeight="300"/>
+            </Grid.RowDefinitions>
+
+            <!-- Form thêm/sửa công việc -->
+            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="15" Margin="0,0,0,10">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="120"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="150"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Row 0: Title -->
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Tên công việc:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Title}" Margin="0,0,0,10"/>
+
+                    <!-- Row 1: Description -->
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Mô tả:" VerticalAlignment="Top" Margin="0,0,10,10"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Description}" 
+                             AcceptsReturn="True" Height="60" Margin="0,0,0,10"/>
+
+                    <!-- Row 2: Deadline Date -->
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Ngày deadline:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding DeadlineDate}" Margin="0,0,10,10"/>
+                    
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Trạng thái:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <ComboBox Grid.Row="2" Grid.Column="3" SelectedIndex="{Binding SelectedStatus}" Margin="0,0,0,10">
+                        <ComboBoxItem>Chưa làm</ComboBoxItem>
+                        <ComboBoxItem>Đang làm</ComboBoxItem>
+                        <ComboBoxItem>Hoàn thành</ComboBoxItem>
+                    </ComboBox>
+
+                    <!-- Row 3: Deadline Time -->
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Giờ deadline:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <TimePicker Grid.Row="3" Grid.Column="1" SelectedTime="{Binding DeadlineTime}" 
+                                ClockIdentifier="24HourClock" Margin="0,0,10,10"/>
+
+                    <!-- Row 4: Buttons -->
+                    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="Thêm" Command="{Binding AddTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Sửa" Command="{Binding UpdateTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Xóa" Command="{Binding DeleteTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Làm mới" Command="{Binding ClearFormCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Kiểm tra deadline" Command="{Binding CheckDeadlinesCommand}" Margin="0,0,10,0" Padding="10,5" Background="Orange"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Danh sách công việc -->
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Filter -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Lọc theo trạng thái:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <ComboBox ItemsSource="{Binding StatusFilterOptions}" 
+                              SelectedItem="{Binding StatusFilter}" 
+                              Width="150"/>
+                </StackPanel>
+
+                <!-- Task List -->
+                <DataGrid Grid.Row="1" 
+                          ItemsSource="{Binding FilteredTasks}"
+                          SelectedItem="{Binding SelectedTask}"
+                          AutoGenerateColumns="False"
+                          CanUserReorderColumns="True"
+                          CanUserResizeColumns="True"
+                          GridLinesVisibility="All"
+                          IsReadOnly="True"
+                          RowHeight="35"
+                          HeadersVisibility="Column">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" MinWidth="50"/>
+                        <DataGridTextColumn Header="Tên công việc" Binding="{Binding Title}" Width="250" MinWidth="200"/>
+                        <DataGridTextColumn Header="Mô tả" Binding="{Binding Description}" Width="300" MinWidth="200"/>
+                        <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
+                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding StatusText}" Width="120" MinWidth="100"/>
+                        <DataGridTemplateColumn Header="Cảnh báo" Width="100" MinWidth="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate DataType="models:TaskItem">
+                                    <Border Background="{Binding ., Converter={StaticResource TaskWarningColorConverter}}"
+                                            CornerRadius="3" Padding="5,2" Margin="2">
+                                        <TextBlock Text="{Binding ., Converter={StaticResource TaskWarningTextConverter}}"
+                                                   Foreground="White" HorizontalAlignment="Center"
+                                                   FontSize="11"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Grid>
+
+        <!-- Notification Panel - Fixed position at top right -->
+        <views:NotificationPanel 
+            DataContext="{Binding}"
+            HorizontalAlignment="Right" 
+            VerticalAlignment="Top"
+            Width="400" 
+            Margin="20"
+            IsHitTestVisible="True"/>
+    </Grid>
+</Window>

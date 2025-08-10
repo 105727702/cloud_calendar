@@ -1,0 +1,74 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:models="using:MyAvaloniaApp.Models"
+             xmlns:converters="using:MyAvaloniaApp.Converters"
+             xmlns:vm="using:MyAvaloniaApp.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="600"
+             x:Class="MyAvaloniaApp.Views.NotificationPanel"
+             x:DataType="vm:MainWindowViewModel">
+
+    <UserControl.Resources>
+        <converters:NotificationTypeToColorConverter x:Key="NotificationTypeToColorConverter"/>
+        <converters:NotificationTypeToIconConverter x:Key="NotificationTypeToIconConverter"/>
+    </UserControl.Resources>
+
+    <Border Background="Transparent" Padding="10">
+        <ItemsControl ItemsSource="{Binding Notifications}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:NotificationItem">
+                    <Border Background="{Binding Type, Converter={StaticResource NotificationTypeToColorConverter}}"
+                            CornerRadius="8" Margin="0,0,0,10" Padding="15"
+                            BoxShadow="0 2 8 0 #40000000"
+                            IsVisible="{Binding IsVisible}">
+                        <Border.Transitions>
+                            <Transitions>
+                                <DoubleTransition Property="Opacity" Duration="0:0:0.3"/>
+                            </Transitions>
+                        </Border.Transitions>
+                        
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Icon -->
+                            <TextBlock Grid.Column="0" Grid.Row="0" Grid.RowSpan="2"
+                                       Text="{Binding Type, Converter={StaticResource NotificationTypeToIconConverter}}"
+                                       Foreground="White" FontSize="24" FontWeight="Bold"
+                                       VerticalAlignment="Center" Margin="0,0,15,0"/>
+
+                            <!-- Title -->
+                            <TextBlock Grid.Column="1" Grid.Row="0"
+                                       Text="{Binding Title}" 
+                                       Foreground="White" FontWeight="Bold" FontSize="14"
+                                       Margin="0,0,0,5"/>
+
+                            <!-- Message -->
+                            <TextBlock Grid.Column="1" Grid.Row="1"
+                                       Text="{Binding Message}"
+                                       Foreground="White" FontSize="12"
+                                       TextWrapping="Wrap"/>
+
+                            <!-- Close Button -->
+                            <Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
+                                    Content="✕" Background="Transparent" BorderBrush="Transparent"
+                                    Foreground="White" FontSize="16" FontWeight="Bold"
+                                    Width="30" Height="30"
+                                    VerticalAlignment="Top" HorizontalAlignment="Right"
+                                    Command="{Binding $parent[UserControl].((vm:MainWindowViewModel)DataContext).RemoveNotificationCommand}"
+                                    CommandParameter="{Binding}"/>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Border>
+</UserControl>
