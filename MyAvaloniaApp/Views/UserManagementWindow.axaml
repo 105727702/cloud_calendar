@@ -1,0 +1,149 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:MyAvaloniaApp.ViewModels"
+        xmlns:models="using:MyAvaloniaApp.Models"
+        xmlns:converters="using:MyAvaloniaApp.Converters"
+        xmlns:views="using:MyAvaloniaApp.Views"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+        x:Class="MyAvaloniaApp.Views.UserManagementWindow"
+        x:DataType="vm:UserManagementViewModel"
+        Title="Quản lý tài khoản người dùng"
+        Width="900" Height="650"
+        MinWidth="800" MinHeight="600"
+        WindowStartupLocation="CenterScreen">
+
+    <Design.DataContext>
+        <vm:UserManagementViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Notification Panel -->
+        <views:AdminNotificationPanel x:Name="NotificationPanel" Grid.Row="0"/>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="1" Margin="0,0,0,20">
+            <TextBlock Text="QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG" 
+                      FontSize="24" 
+                      FontWeight="Bold" 
+                      HorizontalAlignment="Center"
+                      Foreground="#2196F3"/>
+            <TextBlock Text="Chỉ dành cho Admin" 
+                      FontSize="14" 
+                      HorizontalAlignment="Center"
+                      Foreground="Gray"
+                      Margin="0,5,0,0"/>
+        </StackPanel>
+
+        <!-- User List -->
+        <Grid Grid.Row="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Controls -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15" Spacing="10">
+                <Button Content="Làm mới" 
+                       Command="{Binding RefreshCommand}"
+                       Background="#4CAF50" 
+                       Foreground="White" 
+                       Padding="15,8"/>
+                <Button Content="Tạo Admin mặc định" 
+                       Command="{Binding CreateDefaultAdminCommand}"
+                       Background="#FF9800" 
+                       Foreground="White" 
+                       Padding="15,8"/>
+            </StackPanel>
+
+            <!-- Data Grid -->
+            <DataGrid Grid.Row="1" 
+                      ItemsSource="{Binding Users}"
+                      SelectedItem="{Binding SelectedUser}"
+                      AutoGenerateColumns="False"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="All"
+                      IsReadOnly="True"
+                      RowHeight="40"
+                      HeadersVisibility="Column">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" MinWidth="50"/>
+                    <DataGridTextColumn Header="Tên đăng nhập" Binding="{Binding Username}" Width="200" MinWidth="150"/>
+                    <DataGridTextColumn Header="Quyền" Binding="{Binding RoleText}" Width="100" MinWidth="80"/>
+                    <DataGridTextColumn Header="Trạng thái" Width="120" MinWidth="100">
+                        <DataGridTextColumn.Binding>
+                            <Binding Path="IsActive">
+                                <Binding.Converter>
+                                    <converters:BooleanToStringConverter TrueText="Hoạt động" FalseText="Bị khóa"/>
+                                </Binding.Converter>
+                            </Binding>
+                        </DataGridTextColumn.Binding>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedAt, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
+                    <DataGridTextColumn Header="Đăng nhập cuối" Binding="{Binding LastLoginAt, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Action Buttons -->
+            <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,15,0,0" Spacing="10">
+                <Button Content="Chỉnh sửa" 
+                       Command="{Binding EditUserCommand}"
+                       IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
+                       Background="#2196F3" 
+                       Foreground="White" 
+                       Padding="15,8"/>
+                <Button Content="Đặt lại mật khẩu" 
+                       Command="{Binding ResetPasswordCommand}"
+                       IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
+                       Background="#FF9800" 
+                       Foreground="White" 
+                       Padding="15,8"/>
+                <Button Content="Khóa/Mở khóa" 
+                       Command="{Binding ToggleUserStatusCommand}"
+                       IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
+                       Background="#FFC107" 
+                       Foreground="White" 
+                       Padding="15,8"/>
+                <Button Content="Xóa" 
+                       Command="{Binding DeleteUserCommand}"
+                       IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
+                       Background="#F44336" 
+                       Foreground="White" 
+                       Padding="15,8"/>
+            </StackPanel>
+        </Grid>
+
+        <!-- Footer -->
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+            <Button Content="Đóng"
+                   Command="{Binding CloseCommand}"
+                   Background="Gray"
+                   Foreground="White"
+                   Padding="20,8"
+                   FontWeight="SemiBold"/>
+        </StackPanel>
+
+        <!-- Loading Indicator -->
+        <Border Grid.Row="0" Grid.RowSpan="3"
+                Background="#80000000"
+                IsVisible="{Binding IsLoading}"
+                ZIndex="999">
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="Đang tải..." 
+                          HorizontalAlignment="Center"
+                          Foreground="White"
+                          FontSize="16"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

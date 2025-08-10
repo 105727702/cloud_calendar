@@ -143,4 +143,28 @@ namespace MyAvaloniaApp.Converters
             throw new NotImplementedException();
         }
     }
+
+    public class BooleanToStringConverter : IValueConverter
+    {
+        public string TrueText { get; set; } = "True";
+        public string FalseText { get; set; } = "False";
+
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value is bool boolValue)
+            {
+                return boolValue ? TrueText : FalseText;
+            }
+            return FalseText;
+        }
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value?.ToString() == TrueText)
+                return true;
+            if (value?.ToString() == FalseText)
+                return false;
+            return false;
+        }
+    }
 }

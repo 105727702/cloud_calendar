@@ -27,5 +27,17 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [C:/Users/huyho/OneDrive/Desktop/c\#/MyAvaloniaApp/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[C:/Users/huyho/OneDrive/Desktop/c\#/MyAvaloniaApp/Views/AdminNotificationPanel.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/huyho/OneDrive/Desktop/c\#/MyAvaloniaApp/Views/LoginWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [C:/Users/huyho/OneDrive/Desktop/c\#/MyAvaloniaApp/Views/NotificationPanel.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/huyho/OneDrive/Desktop/c\#/MyAvaloniaApp/Views/PasswordResetDialog.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/huyho/OneDrive/Desktop/c\#/MyAvaloniaApp/Views/UserManagementWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

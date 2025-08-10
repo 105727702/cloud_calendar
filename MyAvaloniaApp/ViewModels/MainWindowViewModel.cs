@@ -16,6 +16,7 @@ namespace MyAvaloniaApp.ViewModels
     {
         private readonly DatabaseService _databaseService;
         private readonly NotificationService _notificationService;
+        private readonly AuthenticationService _authService;
         private readonly Timer _deadlineCheckTimer;
         
         private TaskItem? _selectedTask;
@@ -41,20 +42,37 @@ namespace MyAvaloniaApp.ViewModels
         public ICommand ClearFormCommand { get; }
         public ICommand RemoveNotificationCommand { get; }
         public ICommand CheckDeadlinesCommand { get; }
+        public ICommand LogoutCommand { get; }
+        public ICommand OpenUserManagementCommand { get; }
+
+        public string CurrentUserName => _authService.CurrentUser?.Username ?? "Guest";
+        public bool IsAuthenticated => _authService.IsAuthenticated;
+        public bool IsAdmin => _authService.IsAdmin;
+        public bool HasNotifications => Notifications.Any();
 
         public MainWindowViewModel()
         {
             _databaseService = DatabaseService.Instance;
             _notificationService = NotificationService.Instance;
+            _authService = AuthenticationService.Instance;
             Notifications = _notificationService.Notifications;
+            
+            // Subscribe to notifications changes to update HasNotifications
+            Notifications.CollectionChanged += (_, _) => OnPropertyChanged(nameof(HasNotifications));
+
+            // Subscribe to authentication events
+            _authService.UserLoggedIn += OnUserLoggedIn;
+            _authService.UserLoggedOut += OnUserLoggedOut;
 
             // Commands
-            AddTaskCommand = new RelayCommand(async () => await AddTaskAsync());
-            UpdateTaskCommand = new RelayCommand(async () => await UpdateTaskAsync(), () => SelectedTask != null);
-            DeleteTaskCommand = new RelayCommand(async () => await DeleteTaskAsync(), () => SelectedTask != null);
-            ClearFormCommand = new RelayCommand(ClearForm);
-            RemoveNotificationCommand = new RelayCommand<NotificationItem>(RemoveNotification);
-            CheckDeadlinesCommand = new RelayCommand(async () => await CheckDeadlinesAsync());
+            AddTaskCommand = new MainRelayCommand(async () => await AddTaskAsync());
+            UpdateTaskCommand = new MainRelayCommand(async () => await UpdateTaskAsync(), () => SelectedTask != null);
+            DeleteTaskCommand = new MainRelayCommand(async () => await DeleteTaskAsync(), () => SelectedTask != null);
+            ClearFormCommand = new MainRelayCommand(ClearForm);
+            RemoveNotificationCommand = new MainRelayCommand<NotificationItem>(RemoveNotification);
+            CheckDeadlinesCommand = new MainRelayCommand(async () => await CheckDeadlinesAsync());
+            LogoutCommand = new MainRelayCommand(Logout);
+            OpenUserManagementCommand = new MainRelayCommand(OpenUserManagement);
 
             // Timer để kiểm tra deadline định kỳ (mỗi 15 phút)
             _deadlineCheckTimer = new Timer(15 * 60 * 1000); // 15 minutes
@@ -173,7 +191,8 @@ namespace MyAvaloniaApp.ViewModels
         {
             try
             {
-                var tasks = await _databaseService.GetAllTasksAsync();
+                var userId = _authService.CurrentUser?.Id;
+                var tasks = await _databaseService.GetAllTasksAsync(userId);
                 
                 await Dispatcher.UIThread.InvokeAsync(() =>
                 {
@@ -238,7 +257,8 @@ namespace MyAvaloniaApp.ViewModels
                     Status = (TaskItemStatus)SelectedStatus
                 };
 
-                var id = await _databaseService.AddTaskAsync(newTask);
+                var userId = _authService.CurrentUser?.Id;
+                var id = await _databaseService.AddTaskAsync(newTask, userId);
                 newTask.Id = id;
 
                 Tasks.Add(newTask);
@@ -317,8 +337,8 @@ namespace MyAvaloniaApp.ViewModels
         {
             try
             {
-                (UpdateTaskCommand as RelayCommand)?.RaiseCanExecuteChanged();
-                (DeleteTaskCommand as RelayCommand)?.RaiseCanExecuteChanged();
+                (UpdateTaskCommand as MainRelayCommand)?.RaiseCanExecuteChanged();
+                (DeleteTaskCommand as MainRelayCommand)?.RaiseCanExecuteChanged();
             }
             catch
             {
@@ -337,6 +357,33 @@ namespace MyAvaloniaApp.ViewModels
         private async Task CheckDeadlinesAsync()
         {
             await _notificationService.CheckTaskDeadlinesAsync();
+        }
+
+        private void Logout()
+        {
+            _authService.Logout();
+            OnPropertyChanged(nameof(CurrentUserName));
+            OnPropertyChanged(nameof(IsAuthenticated));
+            OnPropertyChanged(nameof(IsAdmin));
+        }
+
+        private void OpenUserManagement()
+        {
+            if (!IsAdmin)
+            {
+                _notificationService.ShowWarning("Không có quyền", "Chỉ Admin mới có thể truy cập tính năng này!");
+                return;
+            }
+
+            var userManagementWindow = new Views.UserManagementWindow();
+            userManagementWindow.Show();
+        }
+
+        public void RefreshUserInfo()
+        {
+            OnPropertyChanged(nameof(CurrentUserName));
+            OnPropertyChanged(nameof(IsAuthenticated));
+            OnPropertyChanged(nameof(IsAdmin));
         }
 
         #endregion
@@ -360,31 +407,67 @@ namespace MyAvaloniaApp.ViewModels
 
         #endregion
 
+        #region Authentication Event Handlers
+
+        private async void OnUserLoggedIn(object? sender, User user)
+        {
+            // Cập nhật thông tin user và reload tasks cho user mới
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                OnPropertyChanged(nameof(CurrentUserName));
+                OnPropertyChanged(nameof(IsAuthenticated));
+                OnPropertyChanged(nameof(IsAdmin));
+            });
+
+            // Load tasks cho user mới
+            await LoadTasksAsync();
+            await CheckDeadlinesAsync();
+        }
+
+        private async void OnUserLoggedOut(object? sender, EventArgs e)
+        {
+            // Clear tasks khi đăng xuất
+            await Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                Tasks.Clear();
+                FilterTasks();
+                OnPropertyChanged(nameof(CurrentUserName));
+                OnPropertyChanged(nameof(IsAuthenticated));
+                OnPropertyChanged(nameof(IsAdmin));
+            });
+        }
+
+        #endregion
+
         #region IDisposable
 
         public void Dispose()
         {
             _deadlineCheckTimer?.Stop();
             _deadlineCheckTimer?.Dispose();
+            
+            // Unsubscribe from authentication events
+            _authService.UserLoggedIn -= OnUserLoggedIn;
+            _authService.UserLoggedOut -= OnUserLoggedOut;
         }
 
         #endregion
     }
 
-    // Simple RelayCommand implementation
-    public class RelayCommand : ICommand
+    // Simple RelayCommand implementation for MainWindow
+    public class MainRelayCommand : ICommand
     {
         private readonly Func<Task>? _executeAsync;
         private readonly Action? _execute;
         private readonly Func<bool>? _canExecute;
 
-        public RelayCommand(Action execute, Func<bool>? canExecute = null)
+        public MainRelayCommand(Action execute, Func<bool>? canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;
         }
 
-        public RelayCommand(Func<Task> executeAsync, Func<bool>? canExecute = null)
+        public MainRelayCommand(Func<Task> executeAsync, Func<bool>? canExecute = null)
         {
             _executeAsync = executeAsync ?? throw new ArgumentNullException(nameof(executeAsync));
             _canExecute = canExecute;
@@ -405,12 +488,12 @@ namespace MyAvaloniaApp.ViewModels
         public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 
-    public class RelayCommand<T> : ICommand
+    public class MainRelayCommand<T> : ICommand
     {
         private readonly Action<T?> _execute;
         private readonly Func<T?, bool>? _canExecute;
 
-        public RelayCommand(Action<T?> execute, Func<T?, bool>? canExecute = null)
+        public MainRelayCommand(Action<T?> execute, Func<T?, bool>? canExecute = null)
         {
             _execute = execute ?? throw new ArgumentNullException(nameof(execute));
             _canExecute = canExecute;

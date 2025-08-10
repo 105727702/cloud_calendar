@@ -101,3 +101,4 @@ C:\Users\huyho\OneDrive\Desktop\c#\MyAvaloniaApp\obj\Debug\net9.0\MyAvalon.9DF80
 C:\Users\huyho\OneDrive\Desktop\c#\MyAvaloniaApp\obj\Debug\net9.0\MyAvaloniaApp.genruntimeconfig.cache
 C:\Users\huyho\OneDrive\Desktop\c#\MyAvaloniaApp\obj\Debug\net9.0\ref\MyAvaloniaApp.dll
 C:\Users\huyho\OneDrive\Desktop\c#\MyAvaloniaApp\bin\Debug\net9.0\Avalonia.Controls.DataGrid.dll
+C:\Users\huyho\OneDrive\Desktop\c#\MyAvaloniaApp\obj\Debug\net9.0\MyAvaloniaApp.sourcelink.json

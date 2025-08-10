@@ -1,0 +1,140 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:MyAvaloniaApp.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
+        x:Class="MyAvaloniaApp.Views.LoginWindow"
+        x:DataType="vm:LoginViewModel"
+        Title="Task Manager - Đăng nhập"
+        Width="600" Height="600"
+        MinWidth="600" MinHeight="600"
+        MaxWidth="600" MaxHeight="600"
+        WindowStartupLocation="CenterScreen"
+        CanResize="False">
+
+    <Window.Styles>
+        <Style Selector="StackPanel.animated">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.4"/>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.4"/>
+                </Transitions>
+            </Setter>
+        </Style>
+        
+        <Style Selector="TextBlock.animated">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Opacity" Duration="0:0:0.4"/>
+                </Transitions>
+            </Setter>
+        </Style>
+    </Window.Styles>
+
+    <Design.DataContext>
+        <vm:LoginViewModel/>
+    </Design.DataContext>
+
+    <Grid Margin="30">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Margin="0,0,0,30" Classes="animated">
+            <TextBlock Text="TASK MANAGER" 
+                      FontSize="24" 
+                      FontWeight="Bold" 
+                      HorizontalAlignment="Center"
+                      Foreground="#2196F3"/>
+            <TextBlock Text="{Binding ModeText}" 
+                      FontSize="18" 
+                      HorizontalAlignment="Center"
+                      Margin="0,10,0,0"
+                      x:Name="ModeTextBlock"
+                      Classes="animated"/>
+        </StackPanel>
+
+        <!-- Form Container with Animation -->
+        <StackPanel Grid.Row="1" x:Name="FormContainer" Spacing="15"
+                   Classes="animated">
+            <StackPanel Spacing="8">
+                <TextBlock Text="Tên đăng nhập:" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding Username}" 
+                        Watermark="Nhập tên đăng nhập"
+                        Height="35"/>
+            </StackPanel>
+
+            <StackPanel Spacing="8">
+                <TextBlock Text="Mật khẩu:" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding Password}" 
+                        PasswordChar="*"
+                        Watermark="Nhập mật khẩu"
+                        Height="35"/>
+            </StackPanel>
+
+            <!-- Error Message -->
+            <TextBlock Text="{Binding ErrorMessage}" 
+                      Foreground="Red" 
+                      FontSize="12"
+                      TextWrapping="Wrap"
+                      IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                      Margin="0,5,0,0"/>
+
+            <!-- Success Message -->
+            <TextBlock Text="{Binding SuccessMessage}" 
+                      Foreground="Green" 
+                      FontSize="12"
+                      FontWeight="SemiBold"
+                      TextWrapping="Wrap"
+                      IsVisible="{Binding SuccessMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                      Margin="0,5,0,0"/>
+
+            <!-- Loading Indicator -->
+            <TextBlock Text="Đang xử lý..." 
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center"
+                      FontStyle="Italic"
+                      Foreground="#2196F3"
+                      IsVisible="{Binding IsLoading}"
+                      Margin="0,10,0,0"/>
+        </StackPanel>
+
+        <!-- Buttons -->
+        <StackPanel Grid.Row="2" Spacing="15" Margin="0,30,0,0"
+                   x:Name="ButtonContainer"
+                   Classes="animated">
+            <Button Content="{Binding ModeText}"
+                   Command="{Binding LoginCommand}"
+                   HorizontalAlignment="Stretch"
+                   Height="40"
+                   Background="#2196F3"
+                   Foreground="White"
+                   FontWeight="SemiBold"
+                   IsEnabled="{Binding !IsLoading}"/>
+
+            <Button Content="{Binding SwitchModeText}"
+                   Command="{Binding SwitchModeCommand}"
+                   HorizontalAlignment="Center"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Foreground="#2196F3"
+                   FontSize="12"
+                   IsEnabled="{Binding !IsLoading}"
+                   Margin="0,5,0,0"/>
+
+            <Button Content="Thoát"
+                   Command="{Binding CancelCommand}"
+                   HorizontalAlignment="Center"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Foreground="Gray"
+                   FontSize="12"
+                   IsEnabled="{Binding !IsLoading}"
+                   Margin="0,5,0,0"/>
+        </StackPanel>
+    </Grid>
+</Window>

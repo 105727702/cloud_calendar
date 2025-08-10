@@ -25,15 +25,42 @@
     </Window.Resources>
 
     <Grid>
-        <!-- Main Content -->
-        <Grid Margin="10">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" MinHeight="200"/>
-                <RowDefinition Height="*" MinHeight="300"/>
-            </Grid.RowDefinitions>
+        <!-- Main Application Content -->
+        <Grid>
+            <!-- Main Content with Logout Button -->
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto" MinHeight="200"/>
+                    <RowDefinition Height="*" MinHeight="300"/>
+                </Grid.RowDefinitions>
+
+                <!-- Logout Button Row - Separate row at top -->
+                <Grid Grid.Row="0" Margin="0,0,0,10">
+                    <!-- Admin Panel Button (Left) -->
+                    <Button Content="🔧 Quản lý Admin" 
+                           Command="{Binding OpenUserManagementCommand}"
+                           Background="#9C27B0" 
+                           Foreground="White" 
+                           BorderThickness="0"
+                           Padding="15,8"
+                           HorizontalAlignment="Left"
+                           FontWeight="SemiBold"
+                           IsVisible="{Binding IsAdmin}"/>
+                    
+                    <!-- Logout Button (Right) -->
+                    <Button Content="Đăng xuất" 
+                           Command="{Binding LogoutCommand}"
+                           Background="#F44336" 
+                           Foreground="White" 
+                           BorderThickness="0"
+                           Padding="15,8"
+                           HorizontalAlignment="Right"
+                           FontWeight="SemiBold"/>
+                </Grid>
 
             <!-- Form thêm/sửa công việc -->
-            <Border Grid.Row="0" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="15" Margin="0,0,0,10">
+            <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="15" Margin="0,0,0,10">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -87,7 +114,7 @@
             </Border>
 
             <!-- Danh sách công việc -->
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
@@ -133,15 +160,17 @@
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>
+            </Grid>
         </Grid>
-
-        <!-- Notification Panel - Fixed position at top right -->
+        
+        <!-- Notification Panel - Overlay on top of everything -->
         <views:NotificationPanel 
             DataContext="{Binding}"
             HorizontalAlignment="Right" 
             VerticalAlignment="Top"
             Width="400" 
-            Margin="20"
-            IsHitTestVisible="True"/>
+            Margin="20,70,20,20"
+            IsHitTestVisible="{Binding HasNotifications}"
+            ZIndex="9999"/>
     </Grid>
 </Window>
