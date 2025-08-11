@@ -176,5 +176,7 @@ namespace MyAvaloniaApp.ViewModels
             else
                 _execute?.Invoke();
         }
+
+        public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
     }
 }
