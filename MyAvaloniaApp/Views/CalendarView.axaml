@@ -107,7 +107,7 @@
                 </Border>
 
                 <!-- Days of week -->
-                <Border Grid.Column="1" Classes="day-border" Padding="10,15" Background="#ecf0f1">
+                <Border Grid.Column="1" Classes="day-border" Padding="10,15" Background="#f8f9fa">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="SUN" FontSize="12" FontWeight="Medium" 
                                    Foreground="#7f8c8d" HorizontalAlignment="Center"/>
@@ -122,7 +122,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="2" Classes="day-border" Padding="10,15" Background="#ecf0f1">
+                <Border Grid.Column="2" Classes="day-border" Padding="10,15" Background="#f8f9fa">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="MON" FontSize="12" FontWeight="Medium" 
                                    Foreground="#7f8c8d" HorizontalAlignment="Center"/>
