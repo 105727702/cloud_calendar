@@ -41,8 +41,29 @@ namespace MyAvaloniaApp.ViewModels
         public ICommand NextWeekCommand { get; }
         public ICommand LogoutCommand { get; }
         public ICommand OpenUserManagementCommand { get; }
+        public ICommand OpenDashboardCommand { get; }
         public ICommand RemoveNotificationCommand { get; private set; } = null!;
         public ICommand CheckDeadlinesCommand { get; private set; } = null!;
+        #endregion
+
+        #region Navigation Properties
+        private object? _currentView;
+        private DashboardViewModel? _dashboardViewModel;
+        
+        public object? CurrentView
+        {
+            get => _currentView;
+            set
+            {
+                _currentView = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsMainViewVisible));
+                OnPropertyChanged(nameof(IsDashboardVisible));
+            }
+        }
+
+        public bool IsMainViewVisible => CurrentView == null;
+        public bool IsDashboardVisible => CurrentView is DashboardViewModel;
         #endregion
 
         #region Authentication Properties
@@ -147,6 +168,7 @@ namespace MyAvaloniaApp.ViewModels
             NextWeekCommand = new MainRelayCommand(CalendarManager.NextWeek);
             LogoutCommand = new MainRelayCommand(Logout);
             OpenUserManagementCommand = new MainRelayCommand(OpenUserManagement);
+            OpenDashboardCommand = new MainRelayCommand(OpenDashboard);
             RemoveNotificationCommand = new MainRelayCommand<NotificationItem>(RemoveNotification);
             CheckDeadlinesCommand = new MainRelayCommand(async () => await CheckDeadlinesAsync());
 
@@ -204,6 +226,21 @@ namespace MyAvaloniaApp.ViewModels
 
             var userManagementWindow = new Views.UserManagementWindow();
             userManagementWindow.Show();
+        }
+
+        private void OpenDashboard()
+        {
+            try
+            {
+                var dashboardService = new DashboardService(_databaseService.TaskRepository);
+                _dashboardViewModel = new DashboardViewModel(dashboardService, _authService);
+                _dashboardViewModel.BackRequested += () => CurrentView = null;
+                CurrentView = _dashboardViewModel;
+            }
+            catch (Exception ex)
+            {
+                _notificationService.ShowError("Lỗi", $"Không thể mở dashboard: {ex.Message}");
+            }
         }
 
         public void RefreshUserInfo()

@@ -25,8 +25,8 @@
     </Window.Resources>
 
     <Grid>
-        <!-- Main Application Content -->
-        <Grid>
+        <!-- Main Application Content - Only show when not in Dashboard -->
+        <Grid IsVisible="{Binding IsMainViewVisible}">
             <!-- Main Content with Logout Button -->
             <Grid Margin="10">
                 <Grid.RowDefinitions>
@@ -37,16 +37,26 @@
 
                 <!-- Logout Button Row - Separate row at top -->
                 <Grid Grid.Row="0" Margin="0,0,0,10">
-                    <!-- Admin Panel Button (Left) -->
-                    <Button Content="🔧 Quản lý Admin" 
-                           Command="{Binding OpenUserManagementCommand}"
-                           Background="#9C27B0" 
-                           Foreground="White" 
-                           BorderThickness="0"
-                           Padding="15,8"
-                           HorizontalAlignment="Left"
-                           FontWeight="SemiBold"
-                           IsVisible="{Binding IsAdmin}"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
+                        <!-- Admin Panel Button -->
+                        <Button Content="🔧 Quản lý Admin" 
+                               Command="{Binding OpenUserManagementCommand}"
+                               Background="#9C27B0" 
+                               Foreground="White" 
+                               BorderThickness="0"
+                               Padding="15,8"
+                               FontWeight="SemiBold"
+                               IsVisible="{Binding IsAdmin}"/>
+                        
+                        <!-- Dashboard Button -->
+                        <Button Content="📊 Dashboard" 
+                               Command="{Binding OpenDashboardCommand}"
+                               Background="#2E7D32" 
+                               Foreground="White" 
+                               BorderThickness="0"
+                               Padding="15,8"
+                               FontWeight="SemiBold"/>
+                    </StackPanel>
                     
                     <!-- Logout Button (Right) -->
                     <Button Content="Đăng xuất" 
@@ -203,6 +213,16 @@
             </Grid>
             </Grid>
         </Grid>
+        
+        <!-- Dashboard View - Only show when in Dashboard mode -->
+        <ContentControl Content="{Binding CurrentView}" 
+                       IsVisible="{Binding IsDashboardVisible}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:DashboardViewModel">
+                    <views:DashboardView/>
+                </DataTemplate>
+            </ContentControl.DataTemplates>
+        </ContentControl>
         
         <!-- Notification Panel - Overlay on top of everything -->
         <views:NotificationPanel 

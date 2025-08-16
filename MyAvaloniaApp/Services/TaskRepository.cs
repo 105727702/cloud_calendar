@@ -252,5 +252,103 @@ namespace MyAvaloniaApp.Services
                 throw;
             }
         }
+
+        // Dashboard methods
+        public async Task<List<TaskItem>> GetTasksByDateRangeAsync(DateTime startDate, DateTime endDate, int? userId = null)
+        {
+            var tasks = new List<TaskItem>();
+
+            using var connection = CreateConnection();
+            await connection.OpenAsync();
+
+            var command = connection.CreateCommand();
+            if (userId.HasValue)
+            {
+                command.CommandText = @"SELECT Id, Title, Description, Deadline, Status 
+                                      FROM Tasks 
+                                      WHERE (UserId = @userId OR UserId IS NULL) 
+                                      AND DATE(Deadline) BETWEEN DATE(@startDate) AND DATE(@endDate)
+                                      ORDER BY Deadline";
+                command.Parameters.AddWithValue("@userId", userId.Value);
+            }
+            else
+            {
+                command.CommandText = @"SELECT Id, Title, Description, Deadline, Status 
+                                      FROM Tasks 
+                                      WHERE DATE(Deadline) BETWEEN DATE(@startDate) AND DATE(@endDate)
+                                      ORDER BY Deadline";
+            }
+
+            command.Parameters.AddWithValue("@startDate", startDate.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@endDate", endDate.ToString("yyyy-MM-dd"));
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                tasks.Add(new TaskItem
+                {
+                    Id = reader.GetInt32(0),
+                    Title = reader.GetString(1),
+                    Description = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
+                    Deadline = DateTime.Parse(reader.GetString(3)),
+                    Status = (TaskItemStatus)reader.GetInt32(4)
+                });
+            }
+
+            return tasks;
+        }
+
+        public async Task<Dictionary<DateTime, (int total, int completed)>> GetTaskStatsByDateAsync(DateTime startDate, DateTime endDate, int? userId = null)
+        {
+            var stats = new Dictionary<DateTime, (int total, int completed)>();
+
+            using var connection = CreateConnection();
+            await connection.OpenAsync();
+
+            var command = connection.CreateCommand();
+            if (userId.HasValue)
+            {
+                command.CommandText = @"SELECT DATE(Deadline) as TaskDate, 
+                                              COUNT(*) as Total,
+                                              SUM(CASE WHEN Status = 2 THEN 1 ELSE 0 END) as Completed
+                                      FROM Tasks 
+                                      WHERE (UserId = @userId OR UserId IS NULL)
+                                      AND DATE(Deadline) BETWEEN DATE(@startDate) AND DATE(@endDate)
+                                      GROUP BY DATE(Deadline)
+                                      ORDER BY DATE(Deadline)";
+                command.Parameters.AddWithValue("@userId", userId.Value);
+            }
+            else
+            {
+                command.CommandText = @"SELECT DATE(Deadline) as TaskDate, 
+                                              COUNT(*) as Total,
+                                              SUM(CASE WHEN Status = 2 THEN 1 ELSE 0 END) as Completed
+                                      FROM Tasks 
+                                      WHERE DATE(Deadline) BETWEEN DATE(@startDate) AND DATE(@endDate)
+                                      GROUP BY DATE(Deadline)
+                                      ORDER BY DATE(Deadline)";
+            }
+
+            command.Parameters.AddWithValue("@startDate", startDate.ToString("yyyy-MM-dd"));
+            command.Parameters.AddWithValue("@endDate", endDate.ToString("yyyy-MM-dd"));
+
+            System.Diagnostics.Debug.WriteLine($"Dashboard SQL Query: {command.CommandText}");
+            System.Diagnostics.Debug.WriteLine($"Date range: {startDate:yyyy-MM-dd} to {endDate:yyyy-MM-dd}");
+            System.Diagnostics.Debug.WriteLine($"UserId: {userId}");
+
+            using var reader = await command.ExecuteReaderAsync();
+            while (await reader.ReadAsync())
+            {
+                var date = DateTime.Parse(reader.GetString(0));
+                var total = reader.GetInt32(1);
+                var completed = reader.GetInt32(2);
+                stats[date] = (total, completed);
+                
+                System.Diagnostics.Debug.WriteLine($"Found data for {date:yyyy-MM-dd}: Total={total}, Completed={completed}");
+            }
+
+            System.Diagnostics.Debug.WriteLine($"Total dates found: {stats.Count}");
+            return stats;
+        }
     }
 }

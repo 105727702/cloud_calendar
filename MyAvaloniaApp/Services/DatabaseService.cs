@@ -19,6 +19,9 @@ namespace MyAvaloniaApp.Services
         private readonly PasswordManager _passwordManager;
         private readonly DatabaseInitializer _initializer;
         
+        // Public access to repositories for advanced usage (like Dashboard)
+        public TaskRepository TaskRepository => (TaskRepository)_taskRepository;
+        
         public static DatabaseService Instance 
         {
             get

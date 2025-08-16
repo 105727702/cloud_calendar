@@ -1,0 +1,368 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vm="using:MyAvaloniaApp.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="MyAvaloniaApp.Views.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+    <Design.DataContext>
+        <vm:DashboardViewModel/>
+    </Design.DataContext>
+
+    <UserControl.Styles>
+        <!-- RadioButton hover effect với priority cao hơn -->
+        <Style Selector="RadioButton.HoverEffect /template/ ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="#424242"/>
+        </Style>
+        <Style Selector="RadioButton.HoverEffect:pointerover /template/ ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="#1565C0"/>
+        </Style>
+        
+        <!-- Style cho RadioButton được chọn -->
+        <Style Selector="RadioButton.HoverEffect:checked /template/ ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="#0D47A1"/>
+        </Style>
+        <Style Selector="RadioButton.HoverEffect:checked:pointerover /template/ ContentPresenter">
+            <Setter Property="TextBlock.Foreground" Value="#1976D2"/>
+        </Style>
+        
+        <!-- TextBlock hover effect -->
+        <Style Selector="TextBlock.HoverEffect">
+            <Setter Property="Foreground" Value="#1565C0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+        <Style Selector="TextBlock.HoverEffect:pointerover">
+            <Setter Property="Foreground" Value="#0D47A1"/>
+        </Style>
+        
+        <!-- Button hover effect với template custom -->
+        <Style Selector="Button.RefreshButton">
+            <Setter Property="Background" Value="#4CAF50"/>
+            <Setter Property="Foreground" Value="#0D47A1"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        TextBlock.Foreground="{TemplateBinding Foreground}"
+                                        TextBlock.FontSize="{TemplateBinding FontSize}"
+                                        TextBlock.FontWeight="{TemplateBinding FontWeight}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.RefreshButton:pointerover">
+            <Setter Property="Background" Value="#66BB6A"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="Button.RefreshButton:pressed">
+            <Setter Property="Background" Value="#388E3C"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        
+        <!-- Style cho nút Quay lại -->
+        <Style Selector="Button.BackButton">
+            <Setter Property="Background" Value="#757575"/>
+            <Setter Property="Foreground" Value="#E3F2FD"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Template">
+                <ControlTemplate>
+                    <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Padding="{TemplateBinding Padding}">
+                        <ContentPresenter Content="{TemplateBinding Content}"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        TextBlock.Foreground="{TemplateBinding Foreground}"
+                                        TextBlock.FontSize="{TemplateBinding FontSize}"
+                                        TextBlock.FontWeight="{TemplateBinding FontWeight}"/>
+                    </Border>
+                </ControlTemplate>
+            </Setter>
+        </Style>
+        <Style Selector="Button.BackButton:pointerover">
+            <Setter Property="Background" Value="#9E9E9E"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+        <Style Selector="Button.BackButton:pressed">
+            <Setter Property="Background" Value="#616161"/>
+            <Setter Property="Foreground" Value="#FFFFFF"/>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Grid Grid.Row="0" Margin="0,0,0,20">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <TextBlock Grid.Column="0" 
+                      Text="📊 Dashboard - Báo cáo tiến độ công việc" 
+                      FontSize="24" 
+                      FontWeight="Bold" 
+                      Foreground="#1565C0"/>
+            
+            <Button Grid.Column="1" 
+                   Content="⬅ Quay lại" 
+                   Command="{Binding BackCommand}"
+                   Classes="BackButton"
+                   Padding="15,8"
+                   FontWeight="SemiBold"/>
+        </Grid>
+
+        <!-- Time Period Selection -->
+        <Border Grid.Row="1" 
+               BorderBrush="#E0E0E0" 
+               BorderThickness="1" 
+               CornerRadius="8" 
+               Padding="20" 
+               Margin="0,0,0,20"
+               Background="#F8F9FA">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Column="0" 
+                          Text="Chế độ hiển thị:" 
+                          FontSize="16" 
+                          FontWeight="Medium"
+                          VerticalAlignment="Center" 
+                          Foreground="#1565C0"
+                          Classes="HoverEffect"
+                          Margin="0,0,15,0"/>
+
+                <StackPanel Grid.Column="1" 
+                           Orientation="Horizontal" 
+                           Spacing="10">
+                    <RadioButton Content="Theo ngày" 
+                               IsChecked="{Binding IsDayView}" 
+                               GroupName="TimePeriod"
+                               Foreground="#424242"
+                               Classes="HoverEffect"
+                               FontSize="14"/>
+                    <RadioButton Content="Theo tuần" 
+                               IsChecked="{Binding IsWeekView}" 
+                               GroupName="TimePeriod"
+                               Foreground="#424242"
+                               Classes="HoverEffect"
+                               FontSize="14"/>
+                    <RadioButton Content="Theo tháng" 
+                               IsChecked="{Binding IsMonthView}" 
+                               GroupName="TimePeriod"
+                               Foreground="#424242"
+                               Classes="HoverEffect"
+                               FontSize="14"/>
+                </StackPanel>
+
+                <Button Grid.Column="2" 
+                       Content="🔄 Làm mới" 
+                       Command="{Binding RefreshCommand}"
+                       Classes="RefreshButton"
+                       Padding="12,6"
+                       FontSize="14"/>
+            </Grid>
+        </Border>
+
+        <!-- Statistics Summary -->
+        <Border Grid.Row="2" 
+               BorderBrush="#E0E0E0" 
+               BorderThickness="1" 
+               CornerRadius="8" 
+               Padding="20" 
+               Margin="0,0,0,20"
+               Background="White">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Total Tasks -->
+                <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                    <TextBlock Text="📝 Tổng số task" 
+                              FontSize="14" 
+                              Foreground="#424242" 
+                              HorizontalAlignment="Center" 
+                              Margin="0,0,0,5"/>
+                    <TextBlock Text="{Binding TotalTasks}" 
+                              FontSize="32" 
+                              FontWeight="Bold" 
+                              Foreground="#0D47A1" 
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Completed Tasks -->
+                <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                    <TextBlock Text="✅ Đã hoàn thành" 
+                              FontSize="14" 
+                              Foreground="#424242" 
+                              HorizontalAlignment="Center" 
+                              Margin="0,0,0,5"/>
+                    <TextBlock Text="{Binding CompletedTasks}" 
+                              FontSize="32" 
+                              FontWeight="Bold" 
+                              Foreground="#2E7D32" 
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Pending Tasks -->
+                <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                    <TextBlock Text="⏳ Chưa hoàn thành" 
+                              FontSize="14" 
+                              Foreground="#424242" 
+                              HorizontalAlignment="Center" 
+                              Margin="0,0,0,5"/>
+                    <TextBlock Text="{Binding PendingTasks}" 
+                              FontSize="32" 
+                              FontWeight="Bold" 
+                              Foreground="#E65100" 
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Completion Rate -->
+                <StackPanel Grid.Column="3" HorizontalAlignment="Center">
+                    <TextBlock Text="📊 Tỷ lệ hoàn thành" 
+                              FontSize="14" 
+                              Foreground="#424242" 
+                              HorizontalAlignment="Center" 
+                              Margin="0,0,0,5"/>
+                    <TextBlock Text="{Binding CompletionRateText}" 
+                              FontSize="32" 
+                              FontWeight="Bold" 
+                              Foreground="#7B1FA2" 
+                              HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Chart Area -->
+        <Border Grid.Row="3" 
+               BorderBrush="#E0E0E0" 
+               BorderThickness="1" 
+               CornerRadius="8" 
+               Padding="20" 
+               Background="White">
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" 
+                         VerticalScrollBarVisibility="Disabled">
+                <ItemsControl ItemsSource="{Binding ChartData}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="10"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Width="80" 
+                                   BorderBrush="#E0E0E0" 
+                                   BorderThickness="1" 
+                                   CornerRadius="4" 
+                                   Padding="5" 
+                                   Background="#FAFAFA">
+                                <StackPanel>
+                                    <!-- Period Label -->
+                                    <TextBlock Text="{Binding Period}" 
+                                              FontSize="12" 
+                                              FontWeight="Medium"
+                                              HorizontalAlignment="Center" 
+                                              Margin="0,0,0,10"
+                                              Foreground="#212121"/>
+                                    
+                                    <!-- Chart Bars -->
+                                    <Grid Height="200" 
+                                         VerticalAlignment="Bottom">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        
+                                        <!-- Bar Chart -->
+                                        <Canvas Grid.Row="0" 
+                                               Background="Transparent" 
+                                               Margin="10,0">
+                                            <!-- Total Tasks Bar Background -->
+                                            <Rectangle Canvas.Left="5" 
+                                                     Canvas.Bottom="0"
+                                                     Width="20"
+                                                     Height="{Binding TotalBarHeight}"
+                                                     Fill="#E3F2FD"
+                                                     Stroke="#0D47A1"
+                                                     StrokeThickness="1"/>
+                                            
+                                            <!-- Completed Tasks Bar -->
+                                            <Rectangle Canvas.Left="5" 
+                                                     Canvas.Bottom="0"
+                                                     Width="20"
+                                                     Height="{Binding CompletedBarHeight}"
+                                                     Fill="#2E7D32"/>
+                                            
+                                            <!-- Completed Tasks Bar -->
+                                            <Rectangle Canvas.Left="30" 
+                                                     Canvas.Bottom="0"
+                                                     Width="20"
+                                                     Height="{Binding CompletedBarHeight}"
+                                                     Fill="#388E3C"/>
+                                        </Canvas>
+                                        
+                                        <!-- Legend -->
+                                        <StackPanel Grid.Row="1" 
+                                                   Margin="0,5,0,0">
+                                            <TextBlock Text="{Binding TotalTasks, StringFormat='Tổng: {0}'}" 
+                                                      FontSize="10" 
+                                                      Foreground="#0D47A1" 
+                                                      HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding CompletedTasks, StringFormat='HT: {0}'}" 
+                                                      FontSize="10" 
+                                                      Foreground="#2E7D32" 
+                                                      HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding CompletionRate, StringFormat=\{0:F1\}%}" 
+                                                      FontSize="10" 
+                                                      FontWeight="Bold"
+                                                      Foreground="#7B1FA2" 
+m y7                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </ScrollViewer>
+        </Border>
+
+        <!-- Loading Indicator -->
+        <TextBlock Grid.Row="4" 
+                  Text="Đang tải dữ liệu..." 
+                  FontSize="16" 
+                  Foreground="#757575"
+                  HorizontalAlignment="Center" 
+                  VerticalAlignment="Center"
+                  IsVisible="{Binding IsLoading}"/>
+    </Grid>
+</UserControl>
