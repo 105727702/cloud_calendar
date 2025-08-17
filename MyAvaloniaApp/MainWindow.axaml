@@ -9,7 +9,7 @@
         mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
         x:Class="MyAvaloniaApp.MainWindow"
         x:DataType="vm:MainWindowViewModel"
-        Title="Task Manager - Quản lý công việc"
+        Title="Task Manager - Task Management"
         MinWidth="1100" MinHeight="700"
         Width="1200" Height="800">
         
@@ -39,7 +39,7 @@
                 <Grid Grid.Row="0" Margin="0,0,0,10">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Spacing="10">
                         <!-- Admin Panel Button -->
-                        <Button Content="🔧 Quản lý Admin" 
+                        <Button Content="🔧 Admin Management" 
                                Command="{Binding OpenUserManagementCommand}"
                                Background="#9C27B0" 
                                Foreground="White" 
@@ -59,7 +59,7 @@
                     </StackPanel>
                     
                     <!-- Logout Button (Right) -->
-                    <Button Content="Đăng xuất" 
+                    <Button Content="Logout" 
                            Command="{Binding LogoutCommand}"
                            Background="#F44336" 
                            Foreground="White" 
@@ -69,7 +69,7 @@
                            FontWeight="SemiBold"/>
                 </Grid>
 
-            <!-- Form thêm/sửa công việc -->
+            <!-- Add/Edit Task Form -->
             <Border Grid.Row="1" BorderBrush="Gray" BorderThickness="1" CornerRadius="5" Padding="15" Margin="0,0,0,10">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -88,43 +88,43 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Row 0: Title -->
-                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Tên công việc:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Task Name:" VerticalAlignment="Center" Margin="0,0,10,10"/>
                     <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Title}" Margin="0,0,0,10"/>
 
                     <!-- Row 1: Description -->
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Mô tả:" VerticalAlignment="Top" Margin="0,0,10,10"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Description:" VerticalAlignment="Top" Margin="0,0,10,10"/>
                     <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3" Text="{Binding Description}" 
                              AcceptsReturn="True" Height="60" Margin="0,0,0,10"/>
 
                     <!-- Row 2: Deadline Date -->
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Ngày deadline:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Deadline Date:" VerticalAlignment="Center" Margin="0,0,10,10"/>
                     <DatePicker Grid.Row="2" Grid.Column="1" SelectedDate="{Binding DeadlineDate}" Margin="0,0,10,10"/>
                     
-                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Trạng thái:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <TextBlock Grid.Row="2" Grid.Column="2" Text="Status:" VerticalAlignment="Center" Margin="0,0,10,10"/>
                     <ComboBox Grid.Row="2" Grid.Column="3" SelectedIndex="{Binding SelectedStatus}" Margin="0,0,0,10">
-                        <ComboBoxItem>Chưa làm</ComboBoxItem>
-                        <ComboBoxItem>Đang làm</ComboBoxItem>
-                        <ComboBoxItem>Hoàn thành</ComboBoxItem>
+                        <ComboBoxItem>Not Started</ComboBoxItem>
+                        <ComboBoxItem>In Progress</ComboBoxItem>
+                        <ComboBoxItem>Completed</ComboBoxItem>
                     </ComboBox>
 
                     <!-- Row 3: Deadline Time -->
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Giờ deadline:" VerticalAlignment="Center" Margin="0,0,10,10"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Deadline Time:" VerticalAlignment="Center" Margin="0,0,10,10"/>
                     <TimePicker Grid.Row="3" Grid.Column="1" SelectedTime="{Binding DeadlineTime}" 
                                 ClockIdentifier="24HourClock" Margin="0,0,10,10"/>
 
                     <!-- Row 4: Buttons -->
                     <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="4" Orientation="Horizontal" Margin="0,10,0,0">
-                        <Button Content="Thêm" Command="{Binding AddTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
-                        <Button Content="Sửa" Command="{Binding UpdateTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
-                        <Button Content="Xóa" Command="{Binding DeleteTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
-                        <Button Content="Làm mới" Command="{Binding ClearFormCommand}" Margin="0,0,10,0" Padding="10,5"/>
-                        <Button Content="Kiểm tra deadline" Command="{Binding CheckDeadlinesCommand}" Margin="0,0,10,0" Padding="10,5" Background="Orange"/>
-                        <Button Content="Reset ID (Giữ dữ liệu)" Command="{Binding ResetTaskIdCommand}" Margin="0,0,10,0" Padding="10,5" Background="Green" Foreground="White"/>
+                        <Button Content="Add" Command="{Binding AddTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Edit" Command="{Binding UpdateTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Delete" Command="{Binding DeleteTaskCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Clear" Command="{Binding ClearFormCommand}" Margin="0,0,10,0" Padding="10,5"/>
+                        <Button Content="Check Deadlines" Command="{Binding CheckDeadlinesCommand}" Margin="0,0,10,0" Padding="10,5" Background="Orange"/>
+                        <Button Content="Reset ID (Keep Data)" Command="{Binding ResetTaskIdCommand}" Margin="0,0,10,0" Padding="10,5" Background="Green" Foreground="White"/>
                     </StackPanel>
                 </Grid>
             </Border>
 
-            <!-- Danh sách công việc - Calendar View -->
+            <!-- Task List - Calendar View -->
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -140,16 +140,16 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     
-                    <TextBlock Grid.Column="0" Text="Lọc theo trạng thái:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <TextBlock Grid.Column="0" Text="Filter by status:" VerticalAlignment="Center" Margin="0,0,10,0"/>
                     <ComboBox Grid.Column="1" ItemsSource="{Binding StatusFilterOptions}" 
                               SelectedItem="{Binding StatusFilter}" 
                               Width="150"/>
                     
                     <!-- View Toggle Buttons -->
                     <StackPanel Grid.Column="3" Orientation="Horizontal">
-                        <Button Content="📅 Lịch tuần" Name="CalendarViewButton" Padding="10,5" Margin="0,0,5,0" 
+                        <Button Content="📅 Weekly Calendar" Name="CalendarViewButton" Padding="10,5" Margin="0,0,5,0" 
                                 Background="#007bff" Foreground="White"/>
-                        <Button Content="📋 Danh sách" Name="ListViewButton" Padding="10,5"
+                        <Button Content="📋 List View" Name="ListViewButton" Padding="10,5"
                                 Background="#6c757d" Foreground="White"/>
                     </StackPanel>
                 </Grid>
@@ -172,7 +172,7 @@
                           IsVisible="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="80" MinWidth="60"/>
-                        <DataGridTemplateColumn Header="Tên công việc" Width="300" MinWidth="250">
+                        <DataGridTemplateColumn Header="Task Name" Width="300" MinWidth="250">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate DataType="models:TaskItem">
                                     <TextBlock Text="{Binding Title}" 
@@ -182,7 +182,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTemplateColumn Header="Mô tả" Width="350" MinWidth="300">
+                        <DataGridTemplateColumn Header="Description" Width="350" MinWidth="300">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate DataType="models:TaskItem">
                                     <TextBlock Text="{Binding Description}" 
@@ -195,8 +195,8 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                         <DataGridTextColumn Header="Deadline" Binding="{Binding Deadline, StringFormat=dd/MM/yyyy HH:mm}" Width="180" MinWidth="160"/>
-                        <DataGridTextColumn Header="Trạng thái" Binding="{Binding StatusText}" Width="120" MinWidth="100"/>
-                        <DataGridTemplateColumn Header="Cảnh báo" Width="130" MinWidth="100">
+                        <DataGridTextColumn Header="Status" Binding="{Binding StatusText}" Width="120" MinWidth="100"/>
+                        <DataGridTemplateColumn Header="Warning" Width="130" MinWidth="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate DataType="models:TaskItem">
                                     <Border Background="{Binding ., Converter={StaticResource TaskWarningColorConverter}}"

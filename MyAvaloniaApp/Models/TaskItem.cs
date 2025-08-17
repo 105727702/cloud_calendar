@@ -60,10 +60,10 @@ namespace MyAvaloniaApp.Models
 
         public string StatusText => Status switch
         {
-            TaskItemStatus.NotStarted => "Chưa làm",
-            TaskItemStatus.InProgress => "Đang làm",
-            TaskItemStatus.Completed => "Hoàn thành",
-            _ => "Không xác định"
+            TaskItemStatus.NotStarted => "Not Started",
+            TaskItemStatus.InProgress => "In Progress",
+            TaskItemStatus.Completed => "Completed",
+            _ => "Unknown"
         };
 
         public bool IsOverdue => DateTime.Now > Deadline && Status != TaskItemStatus.Completed;

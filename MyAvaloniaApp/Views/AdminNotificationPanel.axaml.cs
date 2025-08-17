@@ -62,7 +62,7 @@ namespace MyAvaloniaApp.Views
                 _notificationBorder.IsVisible = true;
             });
 
-            // Tự động ẩn sau 4 giây (tăng thời gian để đọc thông báo tạo admin)
+            // Auto-hide after 4 seconds (increased time to read admin creation notification)
             await Task.Delay(4000);
             
             await Dispatcher.UIThread.InvokeAsync(() =>

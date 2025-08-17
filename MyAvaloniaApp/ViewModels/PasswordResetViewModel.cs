@@ -67,19 +67,19 @@ namespace MyAvaloniaApp.ViewModels
             // Validate input
             if (string.IsNullOrWhiteSpace(NewPassword))
             {
-                ErrorMessage = "Vui lòng nhập mật khẩu mới!";
+                ErrorMessage = "Please enter a new password!";
                 return;
             }
 
             if (NewPassword.Length < 6)
             {
-                ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự!";
+                ErrorMessage = "Password must be at least 6 characters!";
                 return;
             }
 
             if (NewPassword != ConfirmPassword)
             {
-                ErrorMessage = "Mật khẩu xác nhận không khớp!";
+                ErrorMessage = "Password confirmation does not match!";
                 return;
             }
 
@@ -99,12 +99,12 @@ namespace MyAvaloniaApp.ViewModels
                 }
                 else
                 {
-                    ErrorMessage = "Không thể đặt lại mật khẩu. Vui lòng thử lại!";
+                    ErrorMessage = "Unable to reset password. Please try again!";
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Lỗi: {ex.Message}";
+                ErrorMessage = $"Error: {ex.Message}";
             }
             finally
             {

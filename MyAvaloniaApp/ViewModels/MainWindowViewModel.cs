@@ -72,7 +72,7 @@ namespace MyAvaloniaApp.ViewModels
         public bool IsAdmin => _authService.IsAdmin;
         #endregion
 
-        #region Delegated Properties (để giữ tương thích với XAML binding)
+        #region Delegated Properties (to maintain compatibility with XAML binding)
         
         // Task properties
         public ObservableCollection<TaskItem> Tasks => TaskManager.Tasks;
@@ -176,7 +176,7 @@ namespace MyAvaloniaApp.ViewModels
             _authService.UserLoggedIn += OnUserLoggedIn;
             _authService.UserLoggedOut += OnUserLoggedOut;
 
-            // Timer để kiểm tra deadline định kỳ (mỗi 15 phút)
+            // Timer to check deadlines periodically (every 15 minutes)
             _deadlineCheckTimer = new Timer(15 * 60 * 1000); // 15 minutes
             _deadlineCheckTimer.Elapsed += async (_, _) => await CheckDeadlinesAsync();
             _deadlineCheckTimer.AutoReset = true;
@@ -190,7 +190,7 @@ namespace MyAvaloniaApp.ViewModels
             });
 
             // Show welcome notification
-            _notificationService.ShowSuccess("Chào mừng!", "Ứng dụng quản lý task đã sẵn sàng");
+            _notificationService.ShowSuccess("Welcome!", "Task management application is ready");
         }
 
         #region Methods
@@ -220,7 +220,7 @@ namespace MyAvaloniaApp.ViewModels
         {
             if (!IsAdmin)
             {
-                _notificationService.ShowWarning("Không có quyền", "Chỉ Admin mới có thể truy cập tính năng này!");
+                _notificationService.ShowWarning("Access Denied", "Only Admin can access this feature!");
                 return;
             }
 
@@ -239,7 +239,7 @@ namespace MyAvaloniaApp.ViewModels
             }
             catch (Exception ex)
             {
-                _notificationService.ShowError("Lỗi", $"Không thể mở dashboard: {ex.Message}");
+                _notificationService.ShowError("Error", $"Unable to open dashboard: {ex.Message}");
             }
         }
 

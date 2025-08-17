@@ -84,8 +84,8 @@ namespace MyAvaloniaApp.ViewModels
             }
         }
 
-        public string ModeText => IsLoginMode ? "Đăng nhập" : "Đăng ký";
-        public string SwitchModeText => IsLoginMode ? "Chưa có tài khoản? Đăng ký" : "Đã có tài khoản? Đăng nhập";
+        public string ModeText => IsLoginMode ? "Login" : "Register";
+        public string SwitchModeText => IsLoginMode ? "Don't have an account? Register" : "Already have an account? Login";
 
         public ICommand LoginCommand { get; }
         public ICommand SwitchModeCommand { get; }
@@ -122,17 +122,17 @@ namespace MyAvaloniaApp.ViewModels
                     success = await _authService.LoginAsync(Username, Password);
                     if (!success)
                     {
-                        ErrorMessage = "Tên đăng nhập hoặc mật khẩu không đúng!";
+                        ErrorMessage = "Incorrect username or password!";
                     }
                     else
                     {
-                        // Hiển thị thông báo đăng nhập thành công
+                        // Show login success notification
                         NotificationService.Instance.ShowSuccess(
-                            "Đăng nhập thành công",
-                            $"Chào mừng {Username}!"
+                            "Login Successful",
+                            $"Welcome {Username}!"
                         );
                         
-                        // Đăng nhập thành công - đóng cửa sổ login
+                        // Login successful - close login window
                         LoginSuccessful?.Invoke(this, EventArgs.Empty);
                     }
                 }
@@ -140,47 +140,47 @@ namespace MyAvaloniaApp.ViewModels
                 {
                     if (Password.Length < 6)
                     {
-                        ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự!";
+                        ErrorMessage = "Password must be at least 6 characters!";
                         return;
                     }
 
                     success = await _authService.RegisterAsync(Username, Password);
                     if (!success)
                     {
-                        ErrorMessage = "Tên đăng nhập đã tồn tại!";
+                        ErrorMessage = "Username already exists!";
                     }
                     else
                     {
-                        // Hiển thị thông báo đăng ký thành công trong LoginWindow
+                        // Show registration success notification in LoginWindow
                         ErrorMessage = string.Empty; // Clear any error first
                         
-                        // Hiển thị thông báo thành công trong UI
+                        // Show success message in UI
                         await Task.Delay(100); // Small delay to ensure UI updates
                         
-                        // Hiển thị success message
-                        SuccessMessage = "✅ Đăng ký thành công! Tài khoản đã được tạo. Chuyển về chế độ đăng nhập...";
+                        // Show success message
+                        SuccessMessage = "✅ Registration successful! Account has been created. Switching to login mode...";
                         
-                        // Đợi 2.5 giây để user đọc message
+                        // Wait 2.5 seconds for user to read message
                         await Task.Delay(2500);
                         
-                        // Reset message và chuyển về chế độ đăng nhập
+                        // Reset message and switch to login mode
                         SuccessMessage = string.Empty;
                         IsLoginMode = true;
                         
-                        // Reset password để user nhập lại
+                        // Reset password for user to re-enter
                         Password = string.Empty;
                         
-                        // Hiển thị notification sau khi đã chuyển mode
+                        // Show notification after mode switch
                         NotificationService.Instance.ShowSuccess(
-                            "Đăng ký thành công",
-                            "Tài khoản đã được tạo thành công. Bạn có thể đăng nhập ngay bây giờ."
+                            "Registration Successful",
+                            "Account has been created successfully. You can now log in."
                         );
                     }
                 }
             }
             catch (Exception ex)
             {
-                ErrorMessage = $"Lỗi: {ex.Message}";
+                ErrorMessage = $"Error: {ex.Message}";
             }
             finally
             {

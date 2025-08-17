@@ -29,12 +29,12 @@ namespace MyAvaloniaApp.Services
                 CreatedAt = DateTime.Now
             };
 
-            // Thêm vào collection trên UI thread
+            // Add to collection on UI thread
             Dispatcher.UIThread.Post(() =>
             {
                 Notifications.Insert(0, notification);
                 
-                // Giới hạn số lượng notifications hiển thị
+                // Limit the number of displayed notifications
                 while (Notifications.Count > 5)
                 {
                     Notifications.RemoveAt(Notifications.Count - 1);
@@ -43,7 +43,7 @@ namespace MyAvaloniaApp.Services
                 NotificationAdded?.Invoke(notification);
             });
 
-            // Tự động ẩn notification sau một khoảng thời gian
+            // Auto-hide notification after a period of time
             if (duration > 0)
             {
                 Task.Delay(duration).ContinueWith(_ =>
@@ -53,7 +53,7 @@ namespace MyAvaloniaApp.Services
                         if (Notifications.Contains(notification))
                         {
                             notification.IsVisible = false;
-                            // Xóa sau 500ms để có hiệu ứng fade out
+                            // Remove after 500ms to allow fade out effect
                             Task.Delay(500).ContinueWith(__ =>
                             {
                                 Dispatcher.UIThread.Post(() =>
@@ -103,7 +103,7 @@ namespace MyAvaloniaApp.Services
             });
         }
 
-        // Kiểm tra task sắp đến hạn và hiển thị notification
+        // Check tasks nearing deadline and display notifications
         public async Task CheckTaskDeadlinesAsync()
         {
             try
@@ -116,45 +116,45 @@ namespace MyAvaloniaApp.Services
                     
                     if (hoursUntilDeadline <= 0 && task.Status != TaskItemStatus.Completed)
                     {
-                        // Task đã quá hạn
-                        ShowError("Task đã quá hạn!", 
-                            $"'{task.Title}' đã quá hạn {Math.Abs(hoursUntilDeadline):F1} giờ", 6000);
+                        // Task is overdue
+                        ShowError("Task Overdue!", 
+                            $"'{task.Title}' is overdue by {Math.Abs(hoursUntilDeadline):F1} hours", 6000);
                     }
                     else if (hoursUntilDeadline > 0 && hoursUntilDeadline <= 24 && task.Status != TaskItemStatus.Completed)
                     {
-                        // Task gần tới hạn
+                        // Task is approaching deadline
                         string message;
                         NotificationType type;
                         
                         if (hoursUntilDeadline <= 1)
                         {
                             var minutesLeft = Math.Max(1, (int)(hoursUntilDeadline * 60));
-                            message = $"'{task.Title}' sẽ đến hạn trong {minutesLeft} phút!";
+                            message = $"'{task.Title}' is due in {minutesLeft} minutes!";
                             type = NotificationType.Error;
                         }
                         else if (hoursUntilDeadline <= 3)
                         {
-                            message = $"'{task.Title}' sẽ đến hạn trong {hoursUntilDeadline:F1} giờ!";
+                            message = $"'{task.Title}' is due in {hoursUntilDeadline:F1} hours!";
                             type = NotificationType.Error;
                         }
                         else if (hoursUntilDeadline <= 6)
                         {
-                            message = $"'{task.Title}' sẽ đến hạn trong {hoursUntilDeadline:F1} giờ";
+                            message = $"'{task.Title}' is due in {hoursUntilDeadline:F1} hours";
                             type = NotificationType.Warning;
                         }
                         else
                         {
-                            message = $"'{task.Title}' sẽ đến hạn trong {hoursUntilDeadline:F1} giờ";
+                            message = $"'{task.Title}' is due in {hoursUntilDeadline:F1} hours";
                             type = NotificationType.Info;
                         }
                         
-                        ShowNotification("Nhắc nhở deadline", message, type, 5000);
+                        ShowNotification("Deadline Reminder", message, type, 5000);
                     }
                 }
             }
             catch (Exception ex)
             {
-                ShowError("Lỗi", $"Không thể kiểm tra deadline: {ex.Message}");
+                ShowError("Error", $"Unable to check deadlines: {ex.Message}");
             }
         }
     }

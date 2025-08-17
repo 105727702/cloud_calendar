@@ -6,7 +6,7 @@
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="350"
         x:Class="MyAvaloniaApp.Views.LoginWindow"
         x:DataType="vm:LoginViewModel"
-        Title="Task Manager - Đăng nhập"
+        Title="Task Manager - Login"
         Width="600" Height="600"
         MinWidth="600" MinHeight="600"
         MaxWidth="600" MaxHeight="600"
@@ -62,17 +62,17 @@
         <StackPanel Grid.Row="1" x:Name="FormContainer" Spacing="15"
                    Classes="animated">
             <StackPanel Spacing="8">
-                <TextBlock Text="Tên đăng nhập:" FontWeight="SemiBold"/>
+                <TextBlock Text="Username:" FontWeight="SemiBold"/>
                 <TextBox Text="{Binding Username}" 
-                        Watermark="Nhập tên đăng nhập"
+                        Watermark="Enter username"
                         Height="35"/>
             </StackPanel>
 
             <StackPanel Spacing="8">
-                <TextBlock Text="Mật khẩu:" FontWeight="SemiBold"/>
+                <TextBlock Text="Password:" FontWeight="SemiBold"/>
                 <TextBox Text="{Binding Password}" 
                         PasswordChar="*"
-                        Watermark="Nhập mật khẩu"
+                        Watermark="Enter password"
                         Height="35"/>
             </StackPanel>
 
@@ -94,7 +94,7 @@
                       Margin="0,5,0,0"/>
 
             <!-- Loading Indicator -->
-            <TextBlock Text="Đang xử lý..." 
+            <TextBlock Text="Processing..." 
                       HorizontalAlignment="Center"
                       VerticalAlignment="Center"
                       FontStyle="Italic"
@@ -126,7 +126,7 @@
                    IsEnabled="{Binding !IsLoading}"
                    Margin="0,5,0,0"/>
 
-            <Button Content="Thoát"
+            <Button Content="Exit"
                    Command="{Binding CancelCommand}"
                    HorizontalAlignment="Center"
                    Background="Transparent"

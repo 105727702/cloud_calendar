@@ -18,29 +18,29 @@ public partial class App : Application
     {
         try
         {
-            // Khởi tạo database khi ứng dụng bắt đầu
+            // Initialize database when application starts
             var _ = DatabaseService.Instance;
             
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Hiển thị màn hình đăng nhập trước
+                // Show login screen first
                 var loginWindow = new LoginWindow();
                 desktop.MainWindow = loginWindow;
                 
-                // Đợi sự kiện đăng nhập thành công
+                // Wait for successful login event
                 loginWindow.Closed += (sender, e) =>
                 {
                     var authService = AuthenticationService.Instance;
                     if (authService.IsAuthenticated)
                     {
-                        // Đăng nhập thành công, hiển thị MainWindow
+                        // Login successful, show MainWindow
                         var mainWindow = new MainWindow();
                         mainWindow.Show();
                         desktop.MainWindow = mainWindow;
                     }
                     else
                     {
-                        // Người dùng hủy đăng nhập, thoát ứng dụng
+                        // User cancelled login, exit application
                         desktop.Shutdown();
                     }
                 };

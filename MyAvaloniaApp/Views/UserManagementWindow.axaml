@@ -9,7 +9,7 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
         x:Class="MyAvaloniaApp.Views.UserManagementWindow"
         x:DataType="vm:UserManagementViewModel"
-        Title="Quản lý tài khoản người dùng"
+        Title="User Account Management"
         Width="900" Height="650"
         MinWidth="800" MinHeight="600"
         WindowStartupLocation="CenterScreen">
@@ -31,12 +31,12 @@
 
         <!-- Header -->
         <StackPanel Grid.Row="1" Margin="0,0,0,20">
-            <TextBlock Text="QUẢN LÝ TÀI KHOẢN NGƯỜI DÙNG" 
+            <TextBlock Text="USER ACCOUNT MANAGEMENT" 
                       FontSize="24" 
                       FontWeight="Bold" 
                       HorizontalAlignment="Center"
                       Foreground="#2196F3"/>
-            <TextBlock Text="Chỉ dành cho Admin" 
+            <TextBlock Text="Admin Only" 
                       FontSize="14" 
                       HorizontalAlignment="Center"
                       Foreground="Gray"
@@ -53,12 +53,12 @@
 
             <!-- Controls -->
             <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,15" Spacing="10">
-                <Button Content="Làm mới" 
+                <Button Content="Refresh" 
                        Command="{Binding RefreshCommand}"
                        Background="#4CAF50" 
                        Foreground="White" 
                        Padding="15,8"/>
-                <Button Content="Tạo Admin mặc định" 
+                <Button Content="Create Default Admin" 
                        Command="{Binding CreateDefaultAdminCommand}"
                        Background="#FF9800" 
                        Foreground="White" 
@@ -78,43 +78,43 @@
                       HeadersVisibility="Column">
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="60" MinWidth="50"/>
-                    <DataGridTextColumn Header="Tên đăng nhập" Binding="{Binding Username}" Width="200" MinWidth="150"/>
-                    <DataGridTextColumn Header="Quyền" Binding="{Binding RoleText}" Width="100" MinWidth="80"/>
-                    <DataGridTextColumn Header="Trạng thái" Width="120" MinWidth="100">
+                    <DataGridTextColumn Header="Username" Binding="{Binding Username}" Width="200" MinWidth="150"/>
+                    <DataGridTextColumn Header="Role" Binding="{Binding RoleText}" Width="100" MinWidth="80"/>
+                    <DataGridTextColumn Header="Status" Width="120" MinWidth="100">
                         <DataGridTextColumn.Binding>
                             <Binding Path="IsActive">
                                 <Binding.Converter>
-                                    <converters:BooleanToStringConverter TrueText="Hoạt động" FalseText="Bị khóa"/>
+                                    <converters:BooleanToStringConverter TrueText="Active" FalseText="Locked"/>
                                 </Binding.Converter>
                             </Binding>
                         </DataGridTextColumn.Binding>
                     </DataGridTextColumn>
-                    <DataGridTextColumn Header="Ngày tạo" Binding="{Binding CreatedAt, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
-                    <DataGridTextColumn Header="Đăng nhập cuối" Binding="{Binding LastLoginAt, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
+                    <DataGridTextColumn Header="Created Date" Binding="{Binding CreatedAt, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
+                    <DataGridTextColumn Header="Last Login" Binding="{Binding LastLoginAt, StringFormat=dd/MM/yyyy HH:mm}" Width="150" MinWidth="140"/>
                 </DataGrid.Columns>
             </DataGrid>
 
             <!-- Action Buttons -->
             <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,15,0,0" Spacing="10">
-                <Button Content="Chỉnh sửa" 
+                <Button Content="Edit" 
                        Command="{Binding EditUserCommand}"
                        IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
                        Background="#2196F3" 
                        Foreground="White" 
                        Padding="15,8"/>
-                <Button Content="Đặt lại mật khẩu" 
+                <Button Content="Reset Password" 
                        Command="{Binding ResetPasswordCommand}"
                        IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
                        Background="#FF9800" 
                        Foreground="White" 
                        Padding="15,8"/>
-                <Button Content="Khóa/Mở khóa" 
+                <Button Content="Lock/Unlock" 
                        Command="{Binding ToggleUserStatusCommand}"
                        IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
                        Background="#FFC107" 
                        Foreground="White" 
                        Padding="15,8"/>
-                <Button Content="Xóa" 
+                <Button Content="Delete" 
                        Command="{Binding DeleteUserCommand}"
                        IsEnabled="{Binding SelectedUser, Converter={x:Static ObjectConverters.IsNotNull}}"
                        Background="#F44336" 
@@ -125,7 +125,7 @@
 
         <!-- Footer -->
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
-            <Button Content="Đóng"
+            <Button Content="Close"
                    Command="{Binding CloseCommand}"
                    Background="Gray"
                    Foreground="White"
@@ -139,7 +139,7 @@
                 IsVisible="{Binding IsLoading}"
                 ZIndex="999">
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                <TextBlock Text="Đang tải..." 
+                <TextBlock Text="Loading..." 
                           HorizontalAlignment="Center"
                           Foreground="White"
                           FontSize="16"/>

@@ -17,7 +17,7 @@ public partial class MainWindow : Window
         _viewModel = new MainWindowViewModel();
         DataContext = _viewModel;
         
-        // Đăng ký sự kiện logout
+        // Register logout event
         var authService = AuthenticationService.Instance;
         authService.UserLoggedOut += OnUserLoggedOut;
         
@@ -76,7 +76,7 @@ public partial class MainWindow : Window
 
     private void OnUserLoggedOut(object? sender, System.EventArgs e)
     {
-        // Đóng MainWindow và hiển thị LoginWindow
+        // Close MainWindow and show LoginWindow
         this.Hide();
         
         var loginWindow = new LoginWindow();
@@ -87,13 +87,13 @@ public partial class MainWindow : Window
             var authService = AuthenticationService.Instance;
             if (authService.IsAuthenticated)
             {
-                // Refresh data và hiển thị lại MainWindow
+                // Refresh data and show MainWindow again
                 _viewModel?.RefreshUserInfo();
                 this.Show();
             }
             else
             {
-                // Thoát ứng dụng
+                // Exit application
                 this.Close();
             }
         };

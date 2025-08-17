@@ -15,7 +15,7 @@ class Program
         }
         catch (Exception ex)
         {
-            // Log lỗi hoặc hiển thị message box nếu cần
+            // Log error or show message box if needed
             System.Diagnostics.Debug.WriteLine($"Error: {ex.Message}");
             throw;
         }

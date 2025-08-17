@@ -12,7 +12,7 @@
     </Design.DataContext>
 
     <UserControl.Styles>
-        <!-- RadioButton hover effect với priority cao hơn -->
+        <!-- RadioButton hover effect with higher priority -->
         <Style Selector="RadioButton.HoverEffect /template/ ContentPresenter">
             <Setter Property="TextBlock.Foreground" Value="#424242"/>
         </Style>
@@ -20,7 +20,7 @@
             <Setter Property="TextBlock.Foreground" Value="#1565C0"/>
         </Style>
         
-        <!-- Style cho RadioButton được chọn -->
+        <!-- Style for selected RadioButton -->
         <Style Selector="RadioButton.HoverEffect:checked /template/ ContentPresenter">
             <Setter Property="TextBlock.Foreground" Value="#0D47A1"/>
         </Style>
@@ -37,7 +37,7 @@
             <Setter Property="Foreground" Value="#0D47A1"/>
         </Style>
         
-        <!-- Button hover effect với template custom -->
+        <!-- Button hover effect with custom template -->
         <Style Selector="Button.RefreshButton">
             <Setter Property="Background" Value="#4CAF50"/>
             <Setter Property="Foreground" Value="#0D47A1"/>
@@ -69,7 +69,7 @@
             <Setter Property="Foreground" Value="#FFFFFF"/>
         </Style>
         
-        <!-- Style cho nút Quay lại -->
+        <!-- Style for Back button -->
         <Style Selector="Button.BackButton">
             <Setter Property="Background" Value="#757575"/>
             <Setter Property="Foreground" Value="#E3F2FD"/>
@@ -119,13 +119,13 @@
             </Grid.ColumnDefinitions>
             
             <TextBlock Grid.Column="0" 
-                      Text="📊 Dashboard - Báo cáo tiến độ công việc" 
+                      Text="📊 Dashboard - Task Progress Report" 
                       FontSize="24" 
                       FontWeight="Bold" 
                       Foreground="#1565C0"/>
             
             <Button Grid.Column="1" 
-                   Content="⬅ Quay lại" 
+                   Content="⬅ Back" 
                    Command="{Binding BackCommand}"
                    Classes="BackButton"
                    Padding="15,8"
@@ -148,7 +148,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBlock Grid.Column="0" 
-                          Text="Chế độ hiển thị:" 
+                          Text="Display Mode:" 
                           FontSize="16" 
                           FontWeight="Medium"
                           VerticalAlignment="Center" 
@@ -159,19 +159,19 @@
                 <StackPanel Grid.Column="1" 
                            Orientation="Horizontal" 
                            Spacing="10">
-                    <RadioButton Content="Theo ngày" 
+                    <RadioButton Content="By Day" 
                                IsChecked="{Binding IsDayView}" 
                                GroupName="TimePeriod"
                                Foreground="#424242"
                                Classes="HoverEffect"
                                FontSize="14"/>
-                    <RadioButton Content="Theo tuần" 
+                    <RadioButton Content="By Week" 
                                IsChecked="{Binding IsWeekView}" 
                                GroupName="TimePeriod"
                                Foreground="#424242"
                                Classes="HoverEffect"
                                FontSize="14"/>
-                    <RadioButton Content="Theo tháng" 
+                    <RadioButton Content="By Month" 
                                IsChecked="{Binding IsMonthView}" 
                                GroupName="TimePeriod"
                                Foreground="#424242"
@@ -180,7 +180,7 @@
                 </StackPanel>
 
                 <Button Grid.Column="2" 
-                       Content="🔄 Làm mới" 
+                       Content="🔄 Refresh" 
                        Command="{Binding RefreshCommand}"
                        Classes="RefreshButton"
                        Padding="12,6"
@@ -206,7 +206,7 @@
 
                 <!-- Total Tasks -->
                 <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                    <TextBlock Text="📝 Tổng số task" 
+                    <TextBlock Text="📝 Total Tasks" 
                               FontSize="14" 
                               Foreground="#424242" 
                               HorizontalAlignment="Center" 
@@ -220,7 +220,7 @@
 
                 <!-- Completed Tasks -->
                 <StackPanel Grid.Column="1" HorizontalAlignment="Center">
-                    <TextBlock Text="✅ Đã hoàn thành" 
+                    <TextBlock Text="✅ Completed" 
                               FontSize="14" 
                               Foreground="#424242" 
                               HorizontalAlignment="Center" 
@@ -234,7 +234,7 @@
 
                 <!-- Pending Tasks -->
                 <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                    <TextBlock Text="⏳ Chưa hoàn thành" 
+                    <TextBlock Text="⏳ Pending" 
                               FontSize="14" 
                               Foreground="#424242" 
                               HorizontalAlignment="Center" 
@@ -248,7 +248,7 @@
 
                 <!-- Completion Rate -->
                 <StackPanel Grid.Column="3" HorizontalAlignment="Center">
-                    <TextBlock Text="📊 Tỷ lệ hoàn thành" 
+                    <TextBlock Text="📊 Completion Rate" 
                               FontSize="14" 
                               Foreground="#424242" 
                               HorizontalAlignment="Center" 

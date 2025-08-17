@@ -24,13 +24,13 @@ namespace MyAvaloniaApp.ViewModels
         private DateTimeOffset? _deadlineDate = DateTimeOffset.Now.Date.AddDays(1);
         private TimeSpan? _deadlineTime = new TimeSpan(9, 0, 0);
         private int _selectedStatus = 0;
-        private string _statusFilter = "Tất cả";
+        private string _statusFilter = "All";
 
         public ObservableCollection<TaskItem> Tasks { get; } = new();
         public ObservableCollection<TaskItem> FilteredTasks { get; } = new();
         public ObservableCollection<string> StatusFilterOptions { get; } = new()
         {
-            "Tất cả", "Chưa làm", "Đang làm", "Hoàn thành"
+            "All", "Not Started", "In Progress", "Completed"
         };
 
         public TaskManager(DatabaseService databaseService, NotificationService notificationService, AuthenticationService authService)
@@ -84,7 +84,7 @@ namespace MyAvaloniaApp.ViewModels
                     }
                     catch (Exception ex)
                     {
-                        _notificationService?.ShowError("Lỗi", $"Lỗi khi chọn task: {ex.Message}");
+                        _notificationService?.ShowError("Error", $"Error when selecting task: {ex.Message}");
                     }
                 }
             }
@@ -177,7 +177,7 @@ namespace MyAvaloniaApp.ViewModels
             }
             catch (Exception ex)
             {
-                _notificationService.ShowError("Lỗi", $"Không thể tải danh sách task: {ex.Message}");
+                _notificationService.ShowError("Error", $"Unable to load task list: {ex.Message}");
             }
         }
 
@@ -187,9 +187,9 @@ namespace MyAvaloniaApp.ViewModels
             
             var filtered = StatusFilter switch
             {
-                "Chưa làm" => Tasks.Where(t => t.Status == TaskItemStatus.NotStarted),
-                "Đang làm" => Tasks.Where(t => t.Status == TaskItemStatus.InProgress),
-                "Hoàn thành" => Tasks.Where(t => t.Status == TaskItemStatus.Completed),
+                "Not Started" => Tasks.Where(t => t.Status == TaskItemStatus.NotStarted),
+                "In Progress" => Tasks.Where(t => t.Status == TaskItemStatus.InProgress),
+                "Completed" => Tasks.Where(t => t.Status == TaskItemStatus.Completed),
                 _ => Tasks
             };
 
@@ -238,12 +238,12 @@ namespace MyAvaloniaApp.ViewModels
                 FilterTasks();
                 ClearForm();
 
-                _notificationService.ShowSuccess("Thành công", $"Đã thêm task '{newTask.Title}'");
+                _notificationService.ShowSuccess("Success", $"Added task '{newTask.Title}'");
                 OnPropertyChanged(nameof(FilteredTasks));
             }
             catch (Exception ex)
             {
-                _notificationService.ShowError("Lỗi", $"Không thể thêm task: {ex.Message}");
+                _notificationService.ShowError("Error", $"Unable to add task: {ex.Message}");
             }
         }
 
@@ -266,12 +266,12 @@ namespace MyAvaloniaApp.ViewModels
                 await _databaseService.UpdateTaskAsync(SelectedTask);
                 FilterTasks();
 
-                _notificationService.ShowSuccess("Thành công", $"Đã cập nhật task '{taskTitle}'");
+                _notificationService.ShowSuccess("Success", $"Updated task '{taskTitle}'");
                 OnPropertyChanged(nameof(FilteredTasks));
             }
             catch (Exception ex)
             {
-                _notificationService.ShowError("Lỗi", $"Không thể cập nhật task: {ex.Message}");
+                _notificationService.ShowError("Error", $"Unable to update task: {ex.Message}");
             }
         }
 
@@ -287,12 +287,12 @@ namespace MyAvaloniaApp.ViewModels
                 FilterTasks();
                 ClearForm();
 
-                _notificationService.ShowSuccess("Thành công", $"Đã xóa task '{taskTitle}'");
+                _notificationService.ShowSuccess("Success", $"Deleted task '{taskTitle}'");
                 OnPropertyChanged(nameof(FilteredTasks));
             }
             catch (Exception ex)
             {
-                _notificationService.ShowError("Lỗi", $"Không thể xóa task: {ex.Message}");
+                _notificationService.ShowError("Error", $"Unable to delete task: {ex.Message}");
             }
         }
 
@@ -311,18 +311,18 @@ namespace MyAvaloniaApp.ViewModels
         {
             try
             {
-                _notificationService.ShowInfo("Đang xử lý...", "Đang reset ID sequence. Vui lòng đợi...");
+                _notificationService.ShowInfo("Processing...", "Resetting ID sequence. Please wait...");
                 
                 await _databaseService.ResetTaskIdSequencePreserveDataAsync();
                 await LoadTasksAsync();
                 
-                _notificationService.ShowSuccess("Thành công!", 
-                    "ID sequence đã được reset về 1. Tất cả dữ liệu được giữ nguyên!");
+                _notificationService.ShowSuccess("Success!", 
+                    "ID sequence has been reset to 1. All data has been preserved!");
             }
             catch (Exception ex)
             {
-                _notificationService.ShowError("Lỗi!", 
-                    $"Không thể reset ID sequence: {ex.Message}");
+                _notificationService.ShowError("Error!", 
+                    $"Unable to reset ID sequence: {ex.Message}");
             }
         }
 
@@ -339,11 +339,11 @@ namespace MyAvaloniaApp.ViewModels
                         FilterTasks();
                     });
                     
-                    _notificationService.ShowSuccess("Cập nhật", "Trạng thái task đã được cập nhật!");
+                    _notificationService.ShowSuccess("Update", "Task status has been updated!");
                 }
                 catch (Exception ex)
                 {
-                    _notificationService.ShowError("Lỗi", $"Không thể cập nhật trạng thái: {ex.Message}");
+                    _notificationService.ShowError("Error", $"Unable to update status: {ex.Message}");
                 }
             }
         }
