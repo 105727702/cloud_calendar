@@ -13,7 +13,6 @@ namespace MyAvaloniaApp.Services
         private readonly ConcurrentQueue<AuthRequest> _authQueue;
         private readonly SemaphoreSlim _processingLimit;
         private readonly CancellationTokenSource _cancellationTokenSource;
-        private bool _isProcessing;
 
         private RequestQueueManager()
         {

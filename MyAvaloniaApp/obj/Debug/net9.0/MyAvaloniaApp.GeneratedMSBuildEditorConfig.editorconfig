@@ -24,9 +24,6 @@ build_property.EnableCodeStyleSeverity =
 [C:/Users/huyho/OneDrive/Desktop/calendars/c-/MyAvaloniaApp/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/calendars/c-/MyAvaloniaApp/MainWindow.axaml]
-build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
-
 [C:/Users/huyho/OneDrive/Desktop/calendars/c-/MyAvaloniaApp/Views/AdminNotificationPanel.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
@@ -40,6 +37,9 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [C:/Users/huyho/OneDrive/Desktop/calendars/c-/MyAvaloniaApp/Views/LoginWindow.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[C:/Users/huyho/OneDrive/Desktop/calendars/c-/MyAvaloniaApp/Views/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [C:/Users/huyho/OneDrive/Desktop/calendars/c-/MyAvaloniaApp/Views/NotificationPanel.axaml]
