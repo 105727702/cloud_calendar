@@ -4,6 +4,9 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MyAvaloniaApp.Services;
+using MyAvaloniaApp.Views;
+using Avalonia;
+using Avalonia.Controls.ApplicationLifetimes;
 
 namespace MyAvaloniaApp.ViewModels
 {
@@ -89,6 +92,7 @@ namespace MyAvaloniaApp.ViewModels
 
         public ICommand LoginCommand { get; }
         public ICommand SwitchModeCommand { get; }
+        public ICommand ForgotPasswordCommand { get; }
         public ICommand CancelCommand { get; }
 
         public LoginViewModel()
@@ -97,6 +101,7 @@ namespace MyAvaloniaApp.ViewModels
             
             LoginCommand = new LoginRelayCommand(async () => await ExecuteLoginAsync());
             SwitchModeCommand = new LoginRelayCommand(() => IsLoginMode = !IsLoginMode);
+            ForgotPasswordCommand = new LoginRelayCommand(async () => await ExecuteForgotPasswordAsync());
             CancelCommand = new LoginRelayCommand(() => RequestClose?.Invoke(this, EventArgs.Empty));
         }
 
@@ -185,6 +190,64 @@ namespace MyAvaloniaApp.ViewModels
             finally
             {
                 IsLoading = false;
+            }
+        }
+
+        private async Task ExecuteForgotPasswordAsync()
+        {
+            if (IsLoading) return;
+
+            try
+            {
+                // Tạo dialog để người dùng nhập username
+                var forgotPasswordDialog = new ForgotPasswordDialog();
+                
+                // Get the main window from application lifetime
+                var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
+                if (mainWindow == null) return;
+                
+                var result = await forgotPasswordDialog.ShowDialog<string?>(mainWindow);
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    // Kiểm tra xem user có tồn tại không
+                    var user = await DatabaseService.Instance.GetUserByUsernameAsync(result);
+                    if (user != null)
+                    {
+                        // Mở dialog reset password
+                        var resetDialog = new PasswordResetDialog();
+                        var resetViewModel = new PasswordResetViewModel(user.Username, user.Id);
+                        resetDialog.DataContext = resetViewModel;
+
+                        // Subscribe to close event
+                        resetViewModel.RequestClose += (success) =>
+                        {
+                            if (success)
+                            {
+                                NotificationService.Instance.ShowSuccess(
+                                    "Password Reset Successful",
+                                    "Your password has been reset successfully. You can now log in with your new password."
+                                );
+                                // Clear current form
+                                Username = string.Empty;
+                                Password = string.Empty;
+                                ErrorMessage = string.Empty;
+                                SuccessMessage = string.Empty;
+                            }
+                            resetDialog.Close();
+                        };
+
+                        await resetDialog.ShowDialog(mainWindow);
+                    }
+                    else
+                    {
+                        ErrorMessage = "Username not found!";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ErrorMessage = $"Error: {ex.Message}";
             }
         }
 

@@ -126,6 +126,18 @@
                    IsEnabled="{Binding !IsLoading}"
                    Margin="0,5,0,0"/>
 
+            <!-- Forgot Password Button - Only show in Login mode -->
+            <Button Content="Forgot Password?"
+                   Command="{Binding ForgotPasswordCommand}"
+                   HorizontalAlignment="Center"
+                   Background="Transparent"
+                   BorderThickness="0"
+                   Foreground="#FF6B6B"
+                   FontSize="12"
+                   IsEnabled="{Binding !IsLoading}"
+                   IsVisible="{Binding IsLoginMode}"
+                   Margin="0,5,0,0"/>
+
             <Button Content="Exit"
                    Command="{Binding CancelCommand}"
                    HorizontalAlignment="Center"
