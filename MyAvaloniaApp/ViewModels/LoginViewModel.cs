@@ -6,6 +6,7 @@ using System.Windows.Input;
 using MyAvaloniaApp.Services;
 using MyAvaloniaApp.Views;
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 
 namespace MyAvaloniaApp.ViewModels
@@ -19,6 +20,7 @@ namespace MyAvaloniaApp.ViewModels
         private string _successMessage = string.Empty;
         private bool _isLoading = false;
         private bool _isLoginMode = true;
+        private Window? _parentWindow;
 
         public event PropertyChangedEventHandler? PropertyChanged;
         public event EventHandler? LoginSuccessful;
@@ -103,6 +105,11 @@ namespace MyAvaloniaApp.ViewModels
             SwitchModeCommand = new LoginRelayCommand(() => IsLoginMode = !IsLoginMode);
             ForgotPasswordCommand = new LoginRelayCommand(async () => await ExecuteForgotPasswordAsync());
             CancelCommand = new LoginRelayCommand(() => RequestClose?.Invoke(this, EventArgs.Empty));
+        }
+
+        public void SetParentWindow(Window parentWindow)
+        {
+            _parentWindow = parentWindow;
         }
 
         private bool CanExecuteLogin()
@@ -202,11 +209,10 @@ namespace MyAvaloniaApp.ViewModels
                 // Tạo dialog để người dùng nhập username
                 var forgotPasswordDialog = new ForgotPasswordDialog();
                 
-                // Get the main window from application lifetime
-                var mainWindow = (Application.Current?.ApplicationLifetime as IClassicDesktopStyleApplicationLifetime)?.MainWindow;
-                if (mainWindow == null) return;
+                // Sử dụng parent window đã được set
+                if (_parentWindow == null) return;
                 
-                var result = await forgotPasswordDialog.ShowDialog<string?>(mainWindow);
+                var result = await forgotPasswordDialog.ShowDialog<string?>(_parentWindow);
 
                 if (!string.IsNullOrEmpty(result))
                 {
@@ -237,7 +243,7 @@ namespace MyAvaloniaApp.ViewModels
                             resetDialog.Close();
                         };
 
-                        await resetDialog.ShowDialog(mainWindow);
+                        await resetDialog.ShowDialog(_parentWindow);
                     }
                     else
                     {

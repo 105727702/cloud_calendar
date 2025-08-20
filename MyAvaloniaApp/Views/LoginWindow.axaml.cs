@@ -15,6 +15,9 @@ namespace MyAvaloniaApp.Views
             _viewModel = new LoginViewModel();
             DataContext = _viewModel;
             
+            // Set this window as parent for dialogs
+            _viewModel.SetParentWindow(this);
+            
             _viewModel.LoginSuccessful += OnLoginSuccessful;
             _viewModel.RequestClose += OnRequestClose;
             _viewModel.PropertyChanged += OnViewModelPropertyChanged;

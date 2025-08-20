@@ -61,6 +61,45 @@ namespace MyAvaloniaApp.Services
             }
         }
 
+        public async Task<User?> GetByIdAsync(int userId)
+        {
+            try
+            {
+                using var connection = CreateConnection();
+                await connection.OpenAsync();
+
+                var command = connection.CreateCommand();
+                command.CommandText = @"
+                    SELECT Id, Username, PasswordHash, Salt, CreatedAt, LastLoginAt, IsActive, Role 
+                    FROM Users 
+                    WHERE Id = @id";
+                command.Parameters.AddWithValue("@id", userId);
+
+                using var reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    return new User
+                    {
+                        Id = reader.GetInt32(0),
+                        Username = reader.GetString(1),
+                        PasswordHash = reader.GetString(2),
+                        Salt = reader.GetString(3),
+                        CreatedAt = DateTime.Parse(reader.GetString(4)),
+                        LastLoginAt = DateTime.Parse(reader.GetString(5)),
+                        IsActive = reader.GetInt32(6) == 1,
+                        Role = (UserRole)reader.GetInt32(7)
+                    };
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                LogError("Error getting user by id", ex);
+                throw;
+            }
+        }
+
         public async Task<int> CreateAsync(User user)
         {
             if (user == null)

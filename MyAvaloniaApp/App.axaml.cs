@@ -14,7 +14,7 @@ public partial class App : Application
         AvaloniaXamlLoader.Load(this);
     }
 
-    public override void OnFrameworkInitializationCompleted()
+    public override async void OnFrameworkInitializationCompleted()
     {
         try
         {
@@ -23,27 +23,41 @@ public partial class App : Application
             
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                // Show login screen first
-                var loginWindow = new LoginWindow();
-                desktop.MainWindow = loginWindow;
+                var authService = AuthenticationService.Instance;
                 
-                // Wait for successful login event
-                loginWindow.Closed += (sender, e) =>
+                // Thử khôi phục session từ JWT token
+                bool sessionRestored = await authService.TryRestoreSessionAsync();
+                
+                if (sessionRestored)
                 {
-                    var authService = AuthenticationService.Instance;
-                    if (authService.IsAuthenticated)
+                    // Đã có session hợp lệ, mở MainWindow trực tiếp
+                    var mainWindow = new MainWindow();
+                    desktop.MainWindow = mainWindow;
+                    mainWindow.Show();
+                }
+                else
+                {
+                    // Không có session, hiển thị login screen
+                    var loginWindow = new LoginWindow();
+                    desktop.MainWindow = loginWindow;
+                    
+                    // Wait for successful login event
+                    loginWindow.Closed += (sender, e) =>
                     {
-                        // Login successful, show MainWindow
-                        var mainWindow = new MainWindow();
-                        mainWindow.Show();
-                        desktop.MainWindow = mainWindow;
-                    }
-                    else
-                    {
-                        // User cancelled login, exit application
-                        desktop.Shutdown();
-                    }
-                };
+                        if (authService.IsAuthenticated)
+                        {
+                            // Login successful, show MainWindow
+                            var mainWindow = new MainWindow();
+                            mainWindow.Show();
+                            desktop.MainWindow = mainWindow;
+                        }
+                        else
+                        {
+                            // User cancelled login, exit application
+                            desktop.Shutdown();
+                        }
+                    };
+                }
             }
 
             base.OnFrameworkInitializationCompleted();

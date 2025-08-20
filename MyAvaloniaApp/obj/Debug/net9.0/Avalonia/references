@@ -28,6 +28,10 @@ C:\Users\huyho\.nuget\packages\harfbuzzsharp\8.3.1.1\lib\net8.0\HarfBuzzSharp.dl
 C:\Users\huyho\.nuget\packages\microcom.runtime\0.11.0\lib\net5.0\MicroCom.Runtime.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\Microsoft.CSharp.dll
 C:\Users\huyho\.nuget\packages\microsoft.data.sqlite.core\8.0.8\lib\net8.0\Microsoft.Data.Sqlite.dll
+C:\Users\huyho\.nuget\packages\microsoft.identitymodel.abstractions\8.2.1\lib\net9.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\huyho\.nuget\packages\microsoft.identitymodel.jsonwebtokens\8.2.1\lib\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\huyho\.nuget\packages\microsoft.identitymodel.logging\8.2.1\lib\net9.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\huyho\.nuget\packages\microsoft.identitymodel.tokens\8.2.1\lib\net9.0\Microsoft.IdentityModel.Tokens.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\Microsoft.VisualBasic.Core.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\Microsoft.VisualBasic.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\Microsoft.Win32.Primitives.dll
@@ -79,6 +83,7 @@ C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\System.
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\System.Globalization.Calendars.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\System.Globalization.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\System.Globalization.Extensions.dll
+C:\Users\huyho\.nuget\packages\system.identitymodel.tokens.jwt\8.2.1\lib\net9.0\System.IdentityModel.Tokens.Jwt.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\System.IO.Compression.Brotli.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\System.IO.Compression.dll
 C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\9.0.8\ref\net9.0\System.IO.Compression.FileSystem.dll

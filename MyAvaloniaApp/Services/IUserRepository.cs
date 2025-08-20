@@ -8,6 +8,7 @@ namespace MyAvaloniaApp.Services
     public interface IUserRepository
     {
         Task<User?> GetByUsernameAsync(string username);
+        Task<User?> GetByIdAsync(int userId);
         Task<int> CreateAsync(User user);
         Task UpdateLastLoginAsync(int userId, DateTime lastLoginAt);
         Task<List<User>> GetAllAsync();

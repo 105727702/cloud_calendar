@@ -10,6 +10,7 @@ namespace MyAvaloniaApp.Services
     {
         private static AuthenticationService? _instance;
         private readonly DatabaseService _databaseService;
+        private readonly JwtService _jwtService;
         
         public static AuthenticationService Instance => _instance ??= new AuthenticationService();
         
@@ -23,6 +24,7 @@ namespace MyAvaloniaApp.Services
         private AuthenticationService()
         {
             _databaseService = DatabaseService.Instance;
+            _jwtService = JwtService.Instance;
         }
 
         public async Task<bool> LoginAsync(string username, string password)
@@ -40,6 +42,11 @@ namespace MyAvaloniaApp.Services
                     CurrentUser = user;
                     user.LastLoginAt = DateTime.Now;
                     await _databaseService.UpdateUserLastLoginAsync(user.Id, user.LastLoginAt);
+                    
+                    // Tạo và lưu JWT token
+                    var token = _jwtService.GenerateToken(user);
+                    _jwtService.SaveToken(token);
+                    
                     UserLoggedIn?.Invoke(this, user);
                     return true;
                 }
@@ -84,6 +91,11 @@ namespace MyAvaloniaApp.Services
                 {
                     user.Id = userId;
                     CurrentUser = user;
+                    
+                    // Tạo và lưu JWT token
+                    var token = _jwtService.GenerateToken(user);
+                    _jwtService.SaveToken(token);
+                    
                     UserLoggedIn?.Invoke(this, user);
                     return true;
                 }
@@ -99,7 +111,42 @@ namespace MyAvaloniaApp.Services
         public void Logout()
         {
             CurrentUser = null;
+            _jwtService.DeleteToken(); // Xóa JWT token khi logout
             UserLoggedOut?.Invoke(this, EventArgs.Empty);
+        }
+
+        public async Task<bool> TryRestoreSessionAsync()
+        {
+            try
+            {
+                var token = _jwtService.LoadToken();
+                if (string.IsNullOrEmpty(token))
+                    return false;
+
+                var user = _jwtService.GetUserFromToken(token);
+                if (user == null)
+                {
+                    _jwtService.DeleteToken(); // Token không hợp lệ, xóa nó
+                    return false;
+                }
+
+                // Kiểm tra user vẫn còn active trong database
+                var dbUser = await _databaseService.GetUserByIdAsync(user.Id);
+                if (dbUser == null || !dbUser.IsActive)
+                {
+                    _jwtService.DeleteToken(); // User không còn active, xóa token
+                    return false;
+                }
+
+                // Khôi phục session
+                CurrentUser = dbUser;
+                return true;
+            }
+            catch
+            {
+                _jwtService.DeleteToken(); // Có lỗi xảy ra, xóa token
+                return false;
+            }
         }
 
         private string GenerateSalt()

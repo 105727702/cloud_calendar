@@ -310,3 +310,8 @@ C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\obj\Debug\net9.0\refi
 C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\obj\Debug\net9.0\MyAvaloniaApp.pdb
 C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\obj\Debug\net9.0\MyAvaloniaApp.genruntimeconfig.cache
 C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\obj\Debug\net9.0\ref\MyAvaloniaApp.dll
+C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\bin\Debug\net9.0\Microsoft.IdentityModel.Abstractions.dll
+C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\bin\Debug\net9.0\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\bin\Debug\net9.0\Microsoft.IdentityModel.Logging.dll
+C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\bin\Debug\net9.0\Microsoft.IdentityModel.Tokens.dll
+C:\Users\huyho\OneDrive\Desktop\calendars\c-\MyAvaloniaApp\bin\Debug\net9.0\System.IdentityModel.Tokens.Jwt.dll

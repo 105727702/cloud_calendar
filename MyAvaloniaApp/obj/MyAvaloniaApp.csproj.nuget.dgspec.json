@@ -75,6 +75,10 @@
             "ReactiveUI.Avalonia": {
               "target": "Package",
               "version": "[14.7.1, )"
+            },
+            "System.IdentityModel.Tokens.Jwt": {
+              "target": "Package",
+              "version": "[8.2.1, )"
             }
           },
           "imports": [
