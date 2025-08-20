@@ -334,7 +334,7 @@
                                         <!-- Legend -->
                                         <StackPanel Grid.Row="1" 
                                                    Margin="0,5,0,0">
-                                            <TextBlock Text="{Binding TotalTasks, StringFormat='Tổng: {0}'}" 
+                                            <TextBlock Text="{Binding TotalTasks, StringFormat='Overall: {0}'}" 
                                                       FontSize="10" 
                                                       Foreground="#0D47A1" 
                                                       HorizontalAlignment="Center"/>
@@ -359,7 +359,7 @@
 
         <!-- Loading Indicator -->
         <TextBlock Grid.Row="4" 
-                  Text="Đang tải dữ liệu..." 
+                  Text="Wait..." 
                   FontSize="16" 
                   Foreground="#757575"
                   HorizontalAlignment="Center" 
