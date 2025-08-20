@@ -308,7 +308,7 @@
                                                Background="Transparent" 
                                                Margin="10,0">
                                             <!-- Total Tasks Bar Background -->
-                                            <Rectangle Canvas.Left="5" 
+                                            <Rectangle Canvas.Left="15" 
                                                      Canvas.Bottom="0"
                                                      Width="20"
                                                      Height="{Binding TotalBarHeight}"
@@ -317,18 +317,11 @@
                                                      StrokeThickness="1"/>
                                             
                                             <!-- Completed Tasks Bar -->
-                                            <Rectangle Canvas.Left="5" 
+                                            <Rectangle Canvas.Left="15" 
                                                      Canvas.Bottom="0"
                                                      Width="20"
                                                      Height="{Binding CompletedBarHeight}"
                                                      Fill="#2E7D32"/>
-                                            
-                                            <!-- Completed Tasks Bar -->
-                                            <Rectangle Canvas.Left="30" 
-                                                     Canvas.Bottom="0"
-                                                     Width="20"
-                                                     Height="{Binding CompletedBarHeight}"
-                                                     Fill="#388E3C"/>
                                         </Canvas>
                                         
                                         <!-- Legend -->
