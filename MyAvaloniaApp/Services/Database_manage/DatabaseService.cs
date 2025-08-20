@@ -12,6 +12,7 @@ namespace MyAvaloniaApp.Services
         private readonly string _connectionString;
         private static DatabaseService? _instance;
         private static readonly object _lock = new object();
+        private readonly ConnectionPoolManager _connectionPool;
         
         // Repository instances
         private readonly ITaskRepository _taskRepository;
@@ -46,6 +47,9 @@ namespace MyAvaloniaApp.Services
                 var dbPath = Path.Combine(currentDirectory, "tasks.db");
                 _connectionString = $"Data Source={dbPath}";
                 Console.WriteLine($"Database will be created at: {dbPath}");
+                
+                // Initialize connection pool
+                _connectionPool = ConnectionPoolManager.Instance;
                 
                 // Initialize repositories and services
                 _passwordManager = new PasswordManager();

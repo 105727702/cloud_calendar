@@ -11,6 +11,10 @@ namespace MyAvaloniaApp.Services
         private static AuthenticationService? _instance;
         private readonly DatabaseService _databaseService;
         private readonly JwtService _jwtService;
+        private readonly UserCacheManager _cacheManager;
+        private readonly RateLimiter _rateLimiter;
+        private readonly RequestQueueManager _queueManager;
+        private readonly PerformanceMonitor _performanceMonitor;
         
         public static AuthenticationService Instance => _instance ??= new AuthenticationService();
         
@@ -25,37 +29,108 @@ namespace MyAvaloniaApp.Services
         {
             _databaseService = DatabaseService.Instance;
             _jwtService = JwtService.Instance;
+            _cacheManager = UserCacheManager.Instance;
+            _rateLimiter = RateLimiter.Instance;
+            _queueManager = RequestQueueManager.Instance;
+            _performanceMonitor = PerformanceMonitor.Instance;
         }
 
         public async Task<bool> LoginAsync(string username, string password)
         {
+            using var measurement = _performanceMonitor.StartMeasurement("Login");
+            
             try
             {
-                var user = await _databaseService.GetUserByUsernameAsync(username);
-                if (user == null || !user.IsActive)
+                if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
                 {
+                    measurement.MarkFailure();
                     return false;
                 }
 
-                if (VerifyPassword(password, user.PasswordHash, user.Salt))
+                // Rate limiting check
+                var clientId = $"login_{username.ToLower()}";
+                if (!await _rateLimiter.CanMakeRequestAsync(clientId))
                 {
-                    CurrentUser = user;
-                    user.LastLoginAt = DateTime.Now;
-                    await _databaseService.UpdateUserLastLoginAsync(user.Id, user.LastLoginAt);
-                    
-                    // Tạo và lưu JWT token
-                    var token = _jwtService.GenerateToken(user);
-                    _jwtService.SaveToken(token);
-                    
-                    UserLoggedIn?.Invoke(this, user);
-                    return true;
+                    measurement.MarkFailure();
+                    var retryAfter = _rateLimiter.GetRetryAfter(clientId);
+                    throw new InvalidOperationException($"Too many login attempts. Please try again in {retryAfter.TotalSeconds:F0} seconds.");
                 }
-                
-                return false;
+
+                // Queue the request để tránh overload database
+                var result = await _queueManager.EnqueueRequestAsync(async () =>
+                {
+                    using var dbMeasurement = _performanceMonitor.StartMeasurement("DatabaseLogin");
+                    
+                    try
+                    {
+                        // Kiểm tra cache trước
+                        var cachedUser = _cacheManager.GetCachedUserByUsername(username);
+                        if (cachedUser != null && VerifyPassword(password, cachedUser.PasswordHash, cachedUser.Salt))
+                        {
+                            if (!cachedUser.IsActive)
+                            {
+                                dbMeasurement.MarkFailure();
+                                return false;
+                            }
+                            
+                            CurrentUser = cachedUser;
+                            cachedUser.LastLoginAt = DateTime.Now;
+                            await _databaseService.UpdateUserLastLoginAsync(cachedUser.Id, cachedUser.LastLoginAt);
+                            
+                            // Tạo và lưu JWT token
+                            var token = _jwtService.GenerateToken(cachedUser);
+                            _jwtService.SaveToken(token);
+                            
+                            UserLoggedIn?.Invoke(this, cachedUser);
+                            return true;
+                        }
+
+                        // Nếu không có trong cache, query database
+                        var user = await _databaseService.GetUserByUsernameAsync(username);
+                        if (user == null || !user.IsActive)
+                        {
+                            dbMeasurement.MarkFailure();
+                            return false;
+                        }
+
+                        if (VerifyPassword(password, user.PasswordHash, user.Salt))
+                        {
+                            CurrentUser = user;
+                            user.LastLoginAt = DateTime.Now;
+                            await _databaseService.UpdateUserLastLoginAsync(user.Id, user.LastLoginAt);
+                            
+                            // Cache user để lần sau nhanh hơn
+                            _cacheManager.CacheUser(user);
+                            
+                            // Tạo và lưu JWT token
+                            var token = _jwtService.GenerateToken(user);
+                            _jwtService.SaveToken(token);
+                            
+                            UserLoggedIn?.Invoke(this, user);
+                            return true;
+                        }
+                        
+                        dbMeasurement.MarkFailure();
+                        return false;
+                    }
+                    catch
+                    {
+                        dbMeasurement.MarkFailure();
+                        return false;
+                    }
+                });
+
+                if (!result)
+                {
+                    measurement.MarkFailure();
+                }
+
+                return result;
             }
             catch
             {
-                return false;
+                measurement.MarkFailure();
+                throw;
             }
         }
 
@@ -110,6 +185,10 @@ namespace MyAvaloniaApp.Services
 
         public void Logout()
         {
+            if (CurrentUser != null)
+            {
+                _cacheManager.InvalidateUser(CurrentUser.Id); // Xóa user khỏi cache
+            }
             CurrentUser = null;
             _jwtService.DeleteToken(); // Xóa JWT token khi logout
             UserLoggedOut?.Invoke(this, EventArgs.Empty);
@@ -130,15 +209,25 @@ namespace MyAvaloniaApp.Services
                     return false;
                 }
 
+                // Kiểm tra cache trước
+                var cachedUser = _cacheManager.GetCachedUserById(user.Id);
+                if (cachedUser != null && cachedUser.IsActive)
+                {
+                    CurrentUser = cachedUser;
+                    return true;
+                }
+
                 // Kiểm tra user vẫn còn active trong database
                 var dbUser = await _databaseService.GetUserByIdAsync(user.Id);
                 if (dbUser == null || !dbUser.IsActive)
                 {
                     _jwtService.DeleteToken(); // User không còn active, xóa token
+                    _cacheManager.InvalidateUser(user.Id); // Xóa khỏi cache
                     return false;
                 }
 
-                // Khôi phục session
+                // Cache user và khôi phục session
+                _cacheManager.CacheUser(dbUser);
                 CurrentUser = dbUser;
                 return true;
             }
