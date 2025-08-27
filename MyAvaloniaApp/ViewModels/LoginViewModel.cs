@@ -15,11 +15,13 @@ namespace MyAvaloniaApp.ViewModels
     {
         private readonly AuthenticationService _authService;
         private string _username = string.Empty;
+        private string _email = string.Empty;
         private string _password = string.Empty;
         private string _errorMessage = string.Empty;
         private string _successMessage = string.Empty;
         private bool _isLoading = false;
         private bool _isLoginMode = true;
+        private bool _isUsernameLogin = true;
         private Window? _parentWindow;
 
         public event PropertyChangedEventHandler? PropertyChanged;
@@ -36,6 +38,12 @@ namespace MyAvaloniaApp.ViewModels
                     ((LoginRelayCommand)LoginCommand).RaiseCanExecuteChanged();
                 }
             }
+        }
+
+        public string Email
+        {
+            get => _email;
+            set => SetProperty(ref _email, value);
         }
 
         public string Password
@@ -83,11 +91,43 @@ namespace MyAvaloniaApp.ViewModels
                 {
                     OnPropertyChanged(nameof(ModeText));
                     OnPropertyChanged(nameof(SwitchModeText));
+                    OnPropertyChanged(nameof(UsernameLabel));
+                    OnPropertyChanged(nameof(UsernamePlaceholder));
                     ErrorMessage = string.Empty;
                     SuccessMessage = string.Empty;
                 }
             }
         }
+
+        public bool IsUsernameLogin
+        {
+            get => _isUsernameLogin;
+            set
+            {
+                if (SetProperty(ref _isUsernameLogin, value))
+                {
+                    OnPropertyChanged(nameof(IsEmailLogin));
+                    OnPropertyChanged(nameof(UsernameLabel));
+                    OnPropertyChanged(nameof(UsernamePlaceholder));
+                    Username = string.Empty; // Clear input when switching
+                    ErrorMessage = string.Empty;
+                }
+            }
+        }
+
+        public bool IsEmailLogin
+        {
+            get => !_isUsernameLogin;
+            set => IsUsernameLogin = !value;
+        }
+
+        public string UsernameLabel => IsLoginMode 
+            ? (IsUsernameLogin ? "Username:" : "Email:") 
+            : "Username:";
+        
+        public string UsernamePlaceholder => IsLoginMode 
+            ? (IsUsernameLogin ? "Enter username" : "Enter email address") 
+            : "Enter username";
 
         public string ModeText => IsLoginMode ? "Login" : "Register";
         public string SwitchModeText => IsLoginMode ? "Don't have an account? Register" : "Already have an account? Login";
@@ -131,10 +171,22 @@ namespace MyAvaloniaApp.ViewModels
                 
                 if (IsLoginMode)
                 {
-                    success = await _authService.LoginAsync(Username, Password);
+                    // Determine login method based on user selection
+                    if (IsUsernameLogin)
+                    {
+                        success = await _authService.LoginAsync(Username, Password);
+                    }
+                    else
+                    {
+                        // Login with email
+                        success = await _authService.LoginByEmailAsync(Username, Password);
+                    }
+                    
                     if (!success)
                     {
-                        ErrorMessage = "Incorrect username or password!";
+                        ErrorMessage = IsUsernameLogin 
+                            ? "Incorrect username or password!" 
+                            : "Incorrect email or password!";
                     }
                     else
                     {
@@ -156,10 +208,10 @@ namespace MyAvaloniaApp.ViewModels
                         return;
                     }
 
-                    success = await _authService.RegisterAsync(Username, Password);
+                    success = await _authService.RegisterAsync(Username, Password, Email);
                     if (!success)
                     {
-                        ErrorMessage = "Username already exists!";
+                        ErrorMessage = "Username or email already exists!";
                     }
                     else
                     {
@@ -181,6 +233,7 @@ namespace MyAvaloniaApp.ViewModels
                         
                         // Reset password for user to re-enter
                         Password = string.Empty;
+                        Email = string.Empty;
                         
                         // Show notification after mode switch
                         NotificationService.Instance.ShowSuccess(

@@ -2,6 +2,7 @@ using System;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Avalonia.Animation.Easings;
 using MyAvaloniaApp.Models;
 
 namespace MyAvaloniaApp.Services
@@ -134,7 +135,89 @@ namespace MyAvaloniaApp.Services
             }
         }
 
+        public async Task<bool> LoginByEmailAsync(string email, string password)
+        {
+            using var measurement = _performanceMonitor.StartMeasurement("LoginByEmail");
+            
+            try
+            {
+                if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+                {
+                    measurement.MarkFailure();
+                    return false;
+                }
+
+                // Rate limiting check
+                var clientId = $"login_{email.ToLower()}";
+                if (!await _rateLimiter.CanMakeRequestAsync(clientId))
+                {
+                    measurement.MarkFailure();
+                    var retryAfter = _rateLimiter.GetRetryAfter(clientId);
+                    throw new InvalidOperationException($"Too many login attempts. Please try again in {retryAfter.TotalSeconds:F0} seconds.");
+                }
+
+                // Queue the request để tránh overload database
+                var result = await _queueManager.EnqueueRequestAsync(async () =>
+                {
+                    using var dbMeasurement = _performanceMonitor.StartMeasurement("DatabaseLoginByEmail");
+                    
+                    try
+                    {
+                        // Get user by email from database
+                        var user = await _databaseService.GetUserByEmailAsync(email);
+                        if (user == null || !user.IsActive)
+                        {
+                            dbMeasurement.MarkFailure();
+                            return false;
+                        }
+
+                        if (VerifyPassword(password, user.PasswordHash, user.Salt))
+                        {
+                            CurrentUser = user;
+                            user.LastLoginAt = DateTime.Now;
+                            await _databaseService.UpdateUserLastLoginAsync(user.Id, user.LastLoginAt);
+                            
+                            // Cache user để lần sau nhanh hơn
+                            _cacheManager.CacheUser(user);
+                            
+                            // Tạo và lưu JWT token
+                            var token = _jwtService.GenerateToken(user);
+                            _jwtService.SaveToken(token);
+                            
+                            UserLoggedIn?.Invoke(this, user);
+                            return true;
+                        }
+                        
+                        dbMeasurement.MarkFailure();
+                        return false;
+                    }
+                    catch
+                    {
+                        dbMeasurement.MarkFailure();
+                        return false;
+                    }
+                });
+
+                if (!result)
+                {
+                    measurement.MarkFailure();
+                }
+
+                return result;
+            }
+            catch
+            {
+                measurement.MarkFailure();
+                throw;
+            }
+        }
+
         public async Task<bool> RegisterAsync(string username, string password)
+        {
+            return await RegisterAsync(username, password, null);
+        }
+
+        public async Task<bool> RegisterAsync(string username, string password, string? email)
         {
             try
             {
@@ -145,6 +228,16 @@ namespace MyAvaloniaApp.Services
                     return false;
                 }
 
+                // Kiểm tra xem email đã tồn tại chưa (nếu email được cung cấp)
+                if (!string.IsNullOrWhiteSpace(email))
+                {
+                    var existingEmailUser = await _databaseService.GetUserByEmailAsync(email);
+                    if (existingEmailUser != null)
+                    {
+                        return false;
+                    }
+                }
+
                 // Tạo salt và hash password
                 var salt = GenerateSalt();
                 var passwordHash = HashPassword(password, salt);
@@ -152,6 +245,7 @@ namespace MyAvaloniaApp.Services
                 var user = new User
                 {
                     Username = username,
+                    Email = email ?? string.Empty,
                     PasswordHash = passwordHash,
                     Salt = salt,
                     CreatedAt = DateTime.Now,

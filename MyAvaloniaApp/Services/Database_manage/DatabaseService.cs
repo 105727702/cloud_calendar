@@ -103,6 +103,11 @@ namespace MyAvaloniaApp.Services
             return await _userRepository.GetByUsernameAsync(username);
         }
 
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await _userRepository.GetByEmailAsync(email);
+        }
+
         public async Task<User?> GetUserByIdAsync(int userId)
         {
             return await _userRepository.GetByIdAsync(userId);

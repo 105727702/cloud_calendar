@@ -44,6 +44,7 @@ namespace MyAvaloniaApp.Services
                 CREATE TABLE IF NOT EXISTS Users (
                     Id INTEGER PRIMARY KEY AUTOINCREMENT,
                     Username TEXT NOT NULL UNIQUE,
+                    Email TEXT,
                     PasswordHash TEXT NOT NULL,
                     Salt TEXT NOT NULL,
                     CreatedAt TEXT NOT NULL,
@@ -55,6 +56,9 @@ namespace MyAvaloniaApp.Services
 
             // Thêm cột Role nếu chưa tồn tại (cho compatibility với database cũ)
             await AddColumnIfNotExistsAsync(connection, "Users", "Role", "INTEGER NOT NULL DEFAULT 0");
+            
+            // Thêm cột Email nếu chưa tồn tại (cho compatibility với database cũ)
+            await AddColumnIfNotExistsAsync(connection, "Users", "Email", "TEXT");
         }
 
         private async Task CreateTasksTableAsync(SqliteConnection connection)

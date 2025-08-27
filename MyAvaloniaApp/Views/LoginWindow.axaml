@@ -61,10 +61,32 @@
         <!-- Form Container with Animation -->
         <StackPanel Grid.Row="1" x:Name="FormContainer" Spacing="15"
                    Classes="animated">
+            
+            <!-- Login Type Selection - Only show in Login mode -->
+            <StackPanel Spacing="8" IsVisible="{Binding IsLoginMode}">
+                <TextBlock Text="Login with:" FontWeight="SemiBold"/>
+                <StackPanel Orientation="Horizontal" Spacing="20">
+                    <RadioButton Content="Username" 
+                               IsChecked="{Binding IsUsernameLogin}"
+                               GroupName="LoginType"/>
+                    <RadioButton Content="Email" 
+                               IsChecked="{Binding IsEmailLogin}"
+                               GroupName="LoginType"/>
+                </StackPanel>
+            </StackPanel>
+            
             <StackPanel Spacing="8">
-                <TextBlock Text="Username:" FontWeight="SemiBold"/>
+                <TextBlock Text="{Binding UsernameLabel}" FontWeight="SemiBold"/>
                 <TextBox Text="{Binding Username}" 
-                        Watermark="Enter username"
+                        Watermark="{Binding UsernamePlaceholder}"
+                        Height="35"/>
+            </StackPanel>
+
+            <!-- Email field - Only show in Register mode -->
+            <StackPanel Spacing="8" IsVisible="{Binding !IsLoginMode}">
+                <TextBlock Text="Email:" FontWeight="SemiBold"/>
+                <TextBox Text="{Binding Email}" 
+                        Watermark="Enter email address (optional)"
                         Height="35"/>
             </StackPanel>
 
