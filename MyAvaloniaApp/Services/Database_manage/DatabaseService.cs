@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
 using MyAvaloniaApp.Models;
 
 namespace MyAvaloniaApp.Services
@@ -42,11 +42,9 @@ namespace MyAvaloniaApp.Services
         {
             try
             {
-                // Tạo file database trong thư mục gốc của dự án để dễ dàng truy cập bằng SQLite viewer
-                var currentDirectory = Directory.GetCurrentDirectory();
-                var dbPath = Path.Combine(currentDirectory, "tasks.db");
-                _connectionString = $"Data Source={dbPath}";
-                Console.WriteLine($"Database will be created at: {dbPath}");
+                // Sử dụng MySQL connection string
+                _connectionString = DatabaseConfiguration.MySQL.ConnectionString;
+                Console.WriteLine($"MySQL Database connection: {DatabaseConfiguration.MySQL.Server}:{DatabaseConfiguration.MySQL.Port}/{DatabaseConfiguration.MySQL.Database}");
                 
                 // Initialize connection pool
                 _connectionPool = ConnectionPoolManager.Instance;
@@ -141,7 +139,7 @@ namespace MyAvaloniaApp.Services
         public async Task<bool> ResetUserPasswordAsync(int userId, string newPasswordHash, string newSalt)
         {
             // For backward compatibility with existing signature
-            using var connection = new SqliteConnection(_connectionString);
+            using var connection = new MySqlConnection(_connectionString);
             await connection.OpenAsync();
 
             var command = connection.CreateCommand();

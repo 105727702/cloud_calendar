@@ -16,6 +16,7 @@ namespace MyAvaloniaApp.Services
         private readonly RateLimiter _rateLimiter;
         private readonly RequestQueueManager _queueManager;
         private readonly PerformanceMonitor _performanceMonitor;
+        private readonly PasswordManager _passwordManager;
         
         public static AuthenticationService Instance => _instance ??= new AuthenticationService();
         
@@ -34,6 +35,7 @@ namespace MyAvaloniaApp.Services
             _rateLimiter = RateLimiter.Instance;
             _queueManager = RequestQueueManager.Instance;
             _performanceMonitor = PerformanceMonitor.Instance;
+            _passwordManager = new PasswordManager();
         }
 
         public async Task<bool> LoginAsync(string username, string password)
@@ -66,7 +68,7 @@ namespace MyAvaloniaApp.Services
                     {
                         // Kiểm tra cache trước
                         var cachedUser = _cacheManager.GetCachedUserByUsername(username);
-                        if (cachedUser != null && VerifyPassword(password, cachedUser.PasswordHash, cachedUser.Salt))
+                        if (cachedUser != null && _passwordManager.VerifyPassword(password, cachedUser.PasswordHash, cachedUser.Salt))
                         {
                             if (!cachedUser.IsActive)
                             {
@@ -94,7 +96,7 @@ namespace MyAvaloniaApp.Services
                             return false;
                         }
 
-                        if (VerifyPassword(password, user.PasswordHash, user.Salt))
+                        if (_passwordManager.VerifyPassword(password, user.PasswordHash, user.Salt))
                         {
                             CurrentUser = user;
                             user.LastLoginAt = DateTime.Now;
@@ -171,7 +173,7 @@ namespace MyAvaloniaApp.Services
                             return false;
                         }
 
-                        if (VerifyPassword(password, user.PasswordHash, user.Salt))
+                        if (_passwordManager.VerifyPassword(password, user.PasswordHash, user.Salt))
                         {
                             CurrentUser = user;
                             user.LastLoginAt = DateTime.Now;
@@ -240,7 +242,7 @@ namespace MyAvaloniaApp.Services
 
                 // Tạo salt và hash password
                 var salt = GenerateSalt();
-                var passwordHash = HashPassword(password, salt);
+                var passwordHash = _passwordManager.HashPassword(password, salt);
 
                 var user = new User
                 {
@@ -342,21 +344,9 @@ namespace MyAvaloniaApp.Services
             return Convert.ToBase64String(bytes);
         }
 
-        private string HashPassword(string password, string salt)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var saltedPassword = password + salt;
-                var bytes = Encoding.UTF8.GetBytes(saltedPassword);
-                var hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
-            }
-        }
-
         private bool VerifyPassword(string password, string hash, string salt)
         {
-            var computedHash = HashPassword(password, salt);
-            return computedHash == hash;
+            return _passwordManager.VerifyPassword(password, hash, salt);
         }
     }
 }

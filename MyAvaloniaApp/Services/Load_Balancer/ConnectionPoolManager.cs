@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
 
 namespace MyAvaloniaApp.Services
 {
@@ -12,7 +12,7 @@ namespace MyAvaloniaApp.Services
         private static ConnectionPoolManager? _instance;
         public static ConnectionPoolManager Instance => _instance ??= new ConnectionPoolManager();
 
-        private readonly ConcurrentQueue<SqliteConnection> _availableConnections;
+        private readonly ConcurrentQueue<MySqlConnection> _availableConnections;
         private readonly SemaphoreSlim _connectionSemaphore;
         private readonly string _connectionString;
         private readonly int _maxPoolSize;
@@ -26,10 +26,9 @@ namespace MyAvaloniaApp.Services
             _minPoolSize = 5;  // Tối thiểu 5 connections
             _currentPoolSize = 0;
             
-            var dbPath = System.IO.Path.Combine(AppContext.BaseDirectory, "tasks.db");
-            _connectionString = $"Data Source={dbPath}";
+            _connectionString = DatabaseConfiguration.MySQL.ConnectionString;
             
-            _availableConnections = new ConcurrentQueue<SqliteConnection>();
+            _availableConnections = new ConcurrentQueue<MySqlConnection>();
             _connectionSemaphore = new SemaphoreSlim(_maxPoolSize, _maxPoolSize);
             
             // Khởi tạo minimum connections
@@ -49,7 +48,7 @@ namespace MyAvaloniaApp.Services
             }
         }
 
-        public async Task<SqliteConnection?> GetConnectionAsync(CancellationToken cancellationToken = default)
+        public async Task<MySqlConnection?> GetConnectionAsync(CancellationToken cancellationToken = default)
         {
             if (_disposed) return null;
 
@@ -100,7 +99,7 @@ namespace MyAvaloniaApp.Services
             }
         }
 
-        public void ReturnConnection(SqliteConnection connection)
+        public void ReturnConnection(MySqlConnection connection)
         {
             if (_disposed || connection == null)
             {
@@ -126,11 +125,11 @@ namespace MyAvaloniaApp.Services
             }
         }
 
-        private async Task<SqliteConnection?> CreateNewConnectionAsync(CancellationToken cancellationToken = default)
+        private async Task<MySqlConnection?> CreateNewConnectionAsync(CancellationToken cancellationToken = default)
         {
             try
             {
-                var connection = new SqliteConnection(_connectionString);
+                var connection = new MySqlConnection(_connectionString);
                 await connection.OpenAsync(cancellationToken);
                 return connection;
             }

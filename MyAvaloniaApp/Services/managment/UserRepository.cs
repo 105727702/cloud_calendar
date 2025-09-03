@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
 using MyAvaloniaApp.Models;
 
 namespace MyAvaloniaApp.Services
@@ -33,7 +33,7 @@ namespace MyAvaloniaApp.Services
                 command.CommandText = @"
                     SELECT Id, Username, Email, PasswordHash, Salt, CreatedAt, LastLoginAt, IsActive, Role 
                     FROM Users 
-                    WHERE Username = @username COLLATE NOCASE";
+                    WHERE Username = @username";
                 command.Parameters.AddWithValue("@username", username.Trim());
 
                 using var reader = await command.ExecuteReaderAsync();
@@ -46,8 +46,8 @@ namespace MyAvaloniaApp.Services
                         Email = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                         PasswordHash = reader.GetString(3),
                         Salt = reader.GetString(4),
-                        CreatedAt = DateTime.Parse(reader.GetString(5)),
-                        LastLoginAt = DateTime.Parse(reader.GetString(6)),
+                        CreatedAt = reader.GetDateTime(5),
+                        LastLoginAt = reader.GetDateTime(6),
                         IsActive = reader.GetInt32(7) == 1,
                         Role = (UserRole)reader.GetInt32(8)
                     };
@@ -79,7 +79,7 @@ namespace MyAvaloniaApp.Services
                 command.CommandText = @"
                     SELECT Id, Username, Email, PasswordHash, Salt, CreatedAt, LastLoginAt, IsActive, Role 
                     FROM Users 
-                    WHERE Email = @email COLLATE NOCASE";
+                    WHERE Email = @email";
                 command.Parameters.AddWithValue("@email", email.Trim());
 
                 using var reader = await command.ExecuteReaderAsync();
@@ -92,8 +92,8 @@ namespace MyAvaloniaApp.Services
                         Email = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                         PasswordHash = reader.GetString(3),
                         Salt = reader.GetString(4),
-                        CreatedAt = DateTime.Parse(reader.GetString(5)),
-                        LastLoginAt = DateTime.Parse(reader.GetString(6)),
+                        CreatedAt = reader.GetDateTime(5),
+                        LastLoginAt = reader.GetDateTime(6),
                         IsActive = reader.GetInt32(7) == 1,
                         Role = (UserRole)reader.GetInt32(8)
                     };
@@ -132,8 +132,8 @@ namespace MyAvaloniaApp.Services
                         Email = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                         PasswordHash = reader.GetString(3),
                         Salt = reader.GetString(4),
-                        CreatedAt = DateTime.Parse(reader.GetString(5)),
-                        LastLoginAt = DateTime.Parse(reader.GetString(6)),
+                        CreatedAt = reader.GetDateTime(5),
+                        LastLoginAt = reader.GetDateTime(6),
                         IsActive = reader.GetInt32(7) == 1,
                         Role = (UserRole)reader.GetInt32(8)
                     };
@@ -168,14 +168,14 @@ namespace MyAvaloniaApp.Services
                 command.CommandText = @"
                     INSERT INTO Users (Username, Email, PasswordHash, Salt, CreatedAt, LastLoginAt, IsActive, Role)
                     VALUES (@username, @email, @passwordHash, @salt, @createdAt, @lastLoginAt, @isActive, @role);
-                    SELECT last_insert_rowid();";
+                    SELECT LAST_INSERT_ID();";
 
                 command.Parameters.AddWithValue("@username", user.Username.Trim());
                 command.Parameters.AddWithValue("@email", string.IsNullOrEmpty(user.Email) ? (object)DBNull.Value : user.Email.Trim());
                 command.Parameters.AddWithValue("@passwordHash", user.PasswordHash);
                 command.Parameters.AddWithValue("@salt", user.Salt);
-                command.Parameters.AddWithValue("@createdAt", user.CreatedAt.ToString("yyyy-MM-dd HH:mm:ss"));
-                command.Parameters.AddWithValue("@lastLoginAt", user.LastLoginAt.ToString("yyyy-MM-dd HH:mm:ss"));
+                command.Parameters.AddWithValue("@createdAt", user.CreatedAt);
+                command.Parameters.AddWithValue("@lastLoginAt", user.LastLoginAt);
                 command.Parameters.AddWithValue("@isActive", user.IsActive ? 1 : 0);
                 command.Parameters.AddWithValue("@role", (int)user.Role);
 
@@ -204,7 +204,7 @@ namespace MyAvaloniaApp.Services
                 WHERE Id = @id";
 
             command.Parameters.AddWithValue("@id", userId);
-            command.Parameters.AddWithValue("@lastLoginAt", lastLoginAt.ToString("yyyy-MM-dd HH:mm:ss"));
+            command.Parameters.AddWithValue("@lastLoginAt", lastLoginAt);
 
             await command.ExecuteNonQueryAsync();
         }
@@ -231,8 +231,8 @@ namespace MyAvaloniaApp.Services
                     Email = reader.IsDBNull(2) ? string.Empty : reader.GetString(2),
                     PasswordHash = reader.GetString(3),
                     Salt = reader.GetString(4),
-                    CreatedAt = DateTime.Parse(reader.GetString(5)),
-                    LastLoginAt = DateTime.Parse(reader.GetString(6)),
+                    CreatedAt = reader.GetDateTime(5),
+                    LastLoginAt = reader.GetDateTime(6),
                     IsActive = reader.GetInt32(7) == 1,
                     Role = (UserRole)reader.GetInt32(8)
                 });

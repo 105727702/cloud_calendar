@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {}
+    "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {}
   },
   "projects": {
-    "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {
+    "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
+        "projectUniqueName": "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
         "projectName": "MyAvaloniaApp",
-        "projectPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\c-\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
+        "projectPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
         "packagesPath": "C:\\Users\\huyho\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\c-\\MyAvaloniaApp\\obj\\",
+        "outputPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\huyho\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -68,10 +68,6 @@
               "target": "Package",
               "version": "[11.3.3, )"
             },
-            "Microsoft.Data.Sqlite": {
-              "target": "Package",
-              "version": "[8.0.8, )"
-            },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
               "version": "[17.11.0, )"
@@ -79,6 +75,10 @@
             "Moq": {
               "target": "Package",
               "version": "[4.20.70, )"
+            },
+            "MySql.Data": {
+              "target": "Package",
+              "version": "[9.4.0, )"
             },
             "ReactiveUI.Avalonia": {
               "target": "Package",

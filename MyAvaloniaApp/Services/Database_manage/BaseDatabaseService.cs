@@ -1,6 +1,7 @@
 using System;
+using System.Data;
 using System.IO;
-using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
 
 namespace MyAvaloniaApp.Services
 {
@@ -14,9 +15,9 @@ namespace MyAvaloniaApp.Services
             _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         }
 
-        protected SqliteConnection CreateConnection()
+        protected MySqlConnection CreateConnection()
         {
-            return new SqliteConnection(_connectionString);
+            return new MySqlConnection(_connectionString);
         }
 
         protected void LogError(string message, Exception? ex = null)

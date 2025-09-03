@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using Microsoft.Data.Sqlite;
+using MySql.Data.MySqlClient;
 using MyAvaloniaApp.Models;
 
 namespace MyAvaloniaApp.Services
@@ -22,6 +22,9 @@ namespace MyAvaloniaApp.Services
                 using var connection = CreateConnection();
                 connection.Open();
 
+                // Tạo database nếu chưa tồn tại
+                await CreateDatabaseIfNotExistsAsync();
+                
                 await CreateUsersTableAsync(connection);
                 await CreateTasksTableAsync(connection);
 
@@ -36,65 +39,68 @@ namespace MyAvaloniaApp.Services
             }
         }
 
-        private async Task CreateUsersTableAsync(SqliteConnection connection)
+        private async Task CreateDatabaseIfNotExistsAsync()
         {
-            // Tạo bảng Users
+            // Tạo connection đến MySQL server (không chỉ định database)
+            var serverConnectionString = $"Server={DatabaseConfiguration.MySQL.Server};Port={DatabaseConfiguration.MySQL.Port};Uid={DatabaseConfiguration.MySQL.Username};Pwd={DatabaseConfiguration.MySQL.Password};";
+            
+            using var connection = new MySqlConnection(serverConnectionString);
+            await connection.OpenAsync();
+            
+            var command = connection.CreateCommand();
+            command.CommandText = $"CREATE DATABASE IF NOT EXISTS `{DatabaseConfiguration.MySQL.Database}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci";
+            await command.ExecuteNonQueryAsync();
+            
+            LogInfo($"Database '{DatabaseConfiguration.MySQL.Database}' created or already exists");
+        }
+
+        private async Task CreateUsersTableAsync(MySqlConnection connection)
+        {
+            // Tạo bảng Users với MySQL syntax
             var userCommand = connection.CreateCommand();
             userCommand.CommandText = @"
                 CREATE TABLE IF NOT EXISTS Users (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Username TEXT NOT NULL UNIQUE,
-                    Email TEXT,
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
+                    Username VARCHAR(255) NOT NULL UNIQUE,
+                    Email VARCHAR(255),
                     PasswordHash TEXT NOT NULL,
                     Salt TEXT NOT NULL,
-                    CreatedAt TEXT NOT NULL,
-                    LastLoginAt TEXT NOT NULL,
-                    IsActive INTEGER NOT NULL DEFAULT 1,
-                    Role INTEGER NOT NULL DEFAULT 0
-                )";
-            userCommand.ExecuteNonQuery();
+                    CreatedAt DATETIME NOT NULL,
+                    LastLoginAt DATETIME NOT NULL,
+                    IsActive TINYINT(1) NOT NULL DEFAULT 1,
+                    Role INT NOT NULL DEFAULT 0,
+                    INDEX idx_username (Username),
+                    INDEX idx_email (Email)
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            await userCommand.ExecuteNonQueryAsync();
 
-            // Thêm cột Role nếu chưa tồn tại (cho compatibility với database cũ)
-            await AddColumnIfNotExistsAsync(connection, "Users", "Role", "INTEGER NOT NULL DEFAULT 0");
-            
-            // Thêm cột Email nếu chưa tồn tại (cho compatibility với database cũ)
-            await AddColumnIfNotExistsAsync(connection, "Users", "Email", "TEXT");
+            // MySQL không cần thêm cột như SQLite, ta đã định nghĩa đầy đủ từ đầu
+            LogInfo("Users table created successfully");
         }
 
-        private async Task CreateTasksTableAsync(SqliteConnection connection)
+        private async Task CreateTasksTableAsync(MySqlConnection connection)
         {
-            // Tạo bảng Tasks (cập nhật để liên kết với UserId)
+            // Tạo bảng Tasks với MySQL syntax
             var taskCommand = connection.CreateCommand();
             taskCommand.CommandText = @"
                 CREATE TABLE IF NOT EXISTS Tasks (
-                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    Title TEXT NOT NULL,
+                    Id INT AUTO_INCREMENT PRIMARY KEY,
+                    Title VARCHAR(255) NOT NULL,
                     Description TEXT,
-                    Deadline TEXT NOT NULL,
-                    Status INTEGER NOT NULL,
-                    UserId INTEGER,
-                    FOREIGN KEY (UserId) REFERENCES Users(Id)
-                )";
-            taskCommand.ExecuteNonQuery();
+                    Deadline DATETIME NOT NULL,
+                    Status INT NOT NULL,
+                    UserId INT,
+                    INDEX idx_userid (UserId),
+                    INDEX idx_deadline (Deadline),
+                    FOREIGN KEY (UserId) REFERENCES Users(Id) ON DELETE CASCADE
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+            await taskCommand.ExecuteNonQueryAsync();
 
-            // Thêm cột UserId nếu chưa tồn tại (cho compatibility với database cũ)
-            await AddColumnIfNotExistsAsync(connection, "Tasks", "UserId", "INTEGER");
+            LogInfo("Tasks table created successfully");
         }
 
-        private Task AddColumnIfNotExistsAsync(SqliteConnection connection, string tableName, string columnName, string columnDefinition)
-        {
-            try
-            {
-                var alterCommand = connection.CreateCommand();
-                alterCommand.CommandText = $"ALTER TABLE {tableName} ADD COLUMN {columnName} {columnDefinition}";
-                alterCommand.ExecuteNonQuery();
-            }
-            catch
-            {
-                // Cột đã tồn tại, bỏ qua
-            }
-            return Task.CompletedTask;
-        }
+        // MySQL không cần method AddColumnIfNotExistsAsync như SQLite
+        // Vì ta đã định nghĩa đầy đủ schema từ đầu
 
         private async Task EnsureAdminExistsAsync()
         {
@@ -108,6 +114,13 @@ namespace MyAvaloniaApp.Services
                     // Tạo tài khoản admin mặc định
                     var salt = _passwordManager.GenerateSalt();
                     var passwordHash = _passwordManager.HashPassword("123456", salt);
+
+                    Console.WriteLine($"=== ADMIN CREDENTIALS ===");
+                    Console.WriteLine($"Username: admin");
+                    Console.WriteLine($"Password: 123456");
+                    Console.WriteLine($"Salt: {salt}");
+                    Console.WriteLine($"Hash: {passwordHash}");
+                    Console.WriteLine($"========================");
 
                     var admin = new User
                     {
