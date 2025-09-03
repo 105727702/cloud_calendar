@@ -115,13 +115,6 @@ namespace MyAvaloniaApp.Services
                     var salt = _passwordManager.GenerateSalt();
                     var passwordHash = _passwordManager.HashPassword("123456", salt);
 
-                    Console.WriteLine($"=== ADMIN CREDENTIALS ===");
-                    Console.WriteLine($"Username: admin");
-                    Console.WriteLine($"Password: 123456");
-                    Console.WriteLine($"Salt: {salt}");
-                    Console.WriteLine($"Hash: {passwordHash}");
-                    Console.WriteLine($"========================");
-
                     var admin = new User
                     {
                         Username = "admin",

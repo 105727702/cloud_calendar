@@ -68,6 +68,18 @@
               "target": "Package",
               "version": "[11.3.3, )"
             },
+            "Microsoft.Extensions.Configuration": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.EnvironmentVariables": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
+            "Microsoft.Extensions.Configuration.Json": {
+              "target": "Package",
+              "version": "[8.0.0, )"
+            },
             "Microsoft.NET.Test.Sdk": {
               "target": "Package",
               "version": "[17.11.0, )"
@@ -78,7 +90,7 @@
             },
             "MySql.Data": {
               "target": "Package",
-              "version": "[9.4.0, )"
+              "version": "[9.1.0, )"
             },
             "ReactiveUI.Avalonia": {
               "target": "Package",
