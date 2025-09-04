@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "cLoV+Q/BqTs=",
+  "dgSpecHash": "0K3WoO2Yw94=",
   "success": true,
-  "projectFilePath": "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
+  "projectFilePath": "c:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\huyho\\.nuget\\packages\\avalonia\\11.3.3\\avalonia.11.3.3.nupkg.sha512",
     "C:\\Users\\huyho\\.nuget\\packages\\avalonia.angle.windows.natives\\2.1.25547.20250602\\avalonia.angle.windows.natives.2.1.25547.20250602.nupkg.sha512",

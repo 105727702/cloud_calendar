@@ -15,38 +15,38 @@ build_property.PlatformNeutralAssembly =
 build_property.EnforceExtendedAnalyzerRules = 
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = MyAvaloniaApp
-build_property.ProjectDir = C:\Users\huyho\OneDrive\Desktop\database_test\cloud_calendar\MyAvaloniaApp\
+build_property.ProjectDir = c:\Users\huyho\OneDrive\Desktop\database_test\cloud_calendar\MyAvaloniaApp\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/App.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/App.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/AdminNotificationPanel.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/AdminNotificationPanel.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/CalendarView.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/CalendarView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/DashboardView.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/DashboardView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/ForgotPasswordDialog.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/ForgotPasswordDialog.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/LoginWindow.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/LoginWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/MainWindow.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/NotificationPanel.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/NotificationPanel.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/PasswordResetDialog.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/PasswordResetDialog.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
-[C:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/UserManagementWindow.axaml]
+[c:/Users/huyho/OneDrive/Desktop/database_test/cloud_calendar/MyAvaloniaApp/Views/UserManagementWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml

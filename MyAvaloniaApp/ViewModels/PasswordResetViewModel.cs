@@ -1,8 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using MyAvaloniaApp.Services;
@@ -12,6 +10,7 @@ namespace MyAvaloniaApp.ViewModels
     public class PasswordResetViewModel : INotifyPropertyChanged
     {
         private readonly DatabaseService _databaseService;
+        private readonly PasswordManager _passwordManager;
         private readonly int _userId;
         private string _newPassword = string.Empty;
         private string _confirmPassword = string.Empty;
@@ -55,12 +54,11 @@ namespace MyAvaloniaApp.ViewModels
             UserName = userName;
             _userId = userId;
             _databaseService = DatabaseService.Instance;
-
+            _passwordManager = new PasswordManager();
+            
             ResetPasswordCommand = new PasswordResetRelayCommand(async () => await ResetPasswordAsync());
             CancelCommand = new PasswordResetRelayCommand(() => RequestClose?.Invoke(false));
-        }
-
-        private async Task ResetPasswordAsync()
+        }        private async Task ResetPasswordAsync()
         {
             ErrorMessage = string.Empty;
 
@@ -87,11 +85,8 @@ namespace MyAvaloniaApp.ViewModels
             {
                 IsLoading = true;
 
-                // Generate new salt and hash password
-                var salt = GenerateSalt();
-                var passwordHash = HashPassword(NewPassword, salt);
-
-                var success = await _databaseService.ResetUserPasswordAsync(_userId, passwordHash, salt);
+                // Sử dụng PasswordManager thay vì method riêng
+                var success = await _databaseService.ResetUserPasswordAsync(_userId, NewPassword);
 
                 if (success)
                 {
@@ -109,27 +104,6 @@ namespace MyAvaloniaApp.ViewModels
             finally
             {
                 IsLoading = false;
-            }
-        }
-
-        private string GenerateSalt()
-        {
-            var bytes = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(bytes);
-            }
-            return Convert.ToBase64String(bytes);
-        }
-
-        private string HashPassword(string password, string salt)
-        {
-            using (var sha256 = SHA256.Create())
-            {
-                var saltedPassword = password + salt;
-                var bytes = Encoding.UTF8.GetBytes(saltedPassword);
-                var hash = sha256.ComputeHash(bytes);
-                return Convert.ToBase64String(hash);
             }
         }
 
