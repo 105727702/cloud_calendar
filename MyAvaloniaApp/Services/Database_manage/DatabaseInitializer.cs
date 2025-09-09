@@ -74,7 +74,6 @@ namespace MyAvaloniaApp.Services
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
             await userCommand.ExecuteNonQueryAsync();
 
-            // MySQL không cần thêm cột như SQLite, ta đã định nghĩa đầy đủ từ đầu
             LogInfo("Users table created successfully");
         }
 
@@ -98,9 +97,6 @@ namespace MyAvaloniaApp.Services
 
             LogInfo("Tasks table created successfully");
         }
-
-        // MySQL không cần method AddColumnIfNotExistsAsync như SQLite
-        // Vì ta đã định nghĩa đầy đủ schema từ đầu
 
         private async Task EnsureAdminExistsAsync()
         {

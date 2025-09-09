@@ -61,8 +61,8 @@ namespace MyAvaloniaApp.ViewModels
 
         public DashboardViewModel()
         {
-            // Design-time constructor
-            var mockTaskRepo = new TaskRepository("Data Source=:memory:");
+            // Design-time constructor - use MySQL configuration
+            var mockTaskRepo = new TaskRepository(DatabaseConfiguration.MySQL.ConnectionString);
             _dashboardService = new DashboardService(mockTaskRepo);
             _authService = AuthenticationService.Instance;
             

@@ -44,12 +44,6 @@ namespace MyAvaloniaApp.Services
             public static string Audience => GetConfigValue("Jwt:Audience", "CloudCalendarUsers");
         }
         
-        // Backup SQLite connection string (nếu cần)
-        public static class SQLite
-        {
-            public static string ConnectionString => GetConfigValue("Database:SQLite:ConnectionString", "Data Source=tasks.db");
-        }
-        
         private static string GetConfigValue(string key, string defaultValue)
         {
             // Thử đọc từ Environment Variable trước (cao nhất priority)

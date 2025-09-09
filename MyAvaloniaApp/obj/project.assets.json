@@ -4839,11 +4839,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
+      "projectUniqueName": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
       "projectName": "MyAvaloniaApp",
-      "projectPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
+      "projectPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\cloud_calendar\\MyAvaloniaApp\\MyAvaloniaApp.csproj",
       "packagesPath": "C:\\Users\\huyho\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\database_test\\cloud_calendar\\MyAvaloniaApp\\obj\\",
+      "outputPath": "C:\\Users\\huyho\\OneDrive\\Desktop\\calendars\\cloud_calendar\\MyAvaloniaApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\huyho\\AppData\\Roaming\\NuGet\\NuGet.Config"
